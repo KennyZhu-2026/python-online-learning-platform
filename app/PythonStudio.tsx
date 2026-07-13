@@ -184,7 +184,7 @@ export default function PythonStudio() {
   const createWorker = useCallback(() => {
     workerRef.current?.terminate();
     setRuntimeState("loading");
-    const worker = new Worker("./python-worker.js");
+    const worker = new Worker("./python-worker.js", { type: "module" });
     workerRef.current = worker;
     worker.onmessage = (event: MessageEvent<{ type: string; text?: string }>) => {
       const message = event.data;
@@ -201,12 +201,14 @@ export default function PythonStudio() {
         setOutput((previous) => `${previous}\n\n🕵️ 程序侦探提示\n${explainError(raw)}\n\n${raw}`.trim());
       } else if (message.type === "load-error") {
         setRuntimeState("error");
-        setOutput("Python 魔法盒加载失败了。请检查网络后点击“重新连接”。");
+        console.error("Python environment failed to load:", message.text);
+        setOutput("Python 魔法盒加载失败了。请检查网络后点击“重新加载 Python 环境”。");
       }
     };
-    worker.onerror = () => {
+    worker.onerror = (event) => {
+      console.error("Python worker error:", event.message);
       setRuntimeState("error");
-      setOutput("Python 魔法盒暂时没有连接成功，请重新连接后再试。 ");
+      setOutput("Python 魔法盒暂时没有加载成功，请点击“重新加载 Python 环境”再试。 ");
     };
   }, []);
 
@@ -378,7 +380,7 @@ export default function PythonStudio() {
       : runtimeState === "running"
         ? "正在运行"
         : runtimeState === "error"
-          ? "连接失败"
+          ? "环境加载失败"
           : "正在唤醒 Python";
 
   return (
@@ -466,7 +468,7 @@ export default function PythonStudio() {
               {runtimeState === "running" ? (
                 <button className="stop-button" onClick={stopCode}>■ 停止程序</button>
               ) : runtimeState === "error" ? (
-                <button className="run-button" onClick={createWorker}>↻ 重新连接</button>
+                <button className="run-button" onClick={createWorker}>↻ 重新加载 Python 环境</button>
               ) : (
                 <button className="run-button" onClick={runCode} disabled={runtimeState !== "ready"}>
                   <span aria-hidden="true">▶</span> 运行代码

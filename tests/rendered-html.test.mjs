@@ -33,5 +33,9 @@ test("ships the browser Python worker and social card", async () => {
   assert.match(worker, /loadPyodide/);
   assert.match(worker, /runPythonAsync/);
   assert.match(worker, /setStdin/);
+  assert.match(worker, /pyodide\.mjs/);
+  assert.doesNotMatch(worker, /importScripts/);
+  const studio = await readFile(new URL("../app/PythonStudio.tsx", import.meta.url), "utf8");
+  assert.match(studio, /new Worker\("\.\/python-worker\.js", \{ type: "module" \}\)/);
   await access(new URL("../public/og.png", import.meta.url));
 });

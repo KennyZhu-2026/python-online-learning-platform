@@ -1,4 +1,4 @@
-/* global importScripts, loadPyodide */
+import { loadPyodide } from "https://cdn.jsdelivr.net/pyodide/v314.0.2/full/pyodide.mjs";
 
 const PYODIDE_VERSION = "314.0.2";
 const PYODIDE_BASE = `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`;
@@ -7,7 +7,6 @@ let inputQueue = [];
 
 async function initialize() {
   try {
-    importScripts(`${PYODIDE_BASE}pyodide.js`);
     pyodide = await loadPyodide({
       indexURL: PYODIDE_BASE,
       stdout: (text) => self.postMessage({ type: "stdout", text: `${text}\n` }),
