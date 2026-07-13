@@ -1,0 +1,55 @@
+name: Deploy to ECS
+
+"on":
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-python-online-ecs
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      ECS_HOST: ${{ secrets.ECS_HOST }}
+      ECS_USER: ${{ secrets.ECS_USER }}
+      ECS_PORT: ${{ secrets.ECS_PORT }}
+      DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Build static site
+        run: |
+          set -euo pipefail
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run build:ecs
+          test -f dist-ecs/index.html
+          test -f dist-ecs/python-worker.js
+
+      - name: Configure SSH
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.ECS_SSH_KEY }}" > ~/.ssh/ecs_deploy_key
+          chmod 600 ~/.ssh/ecs_deploy_key
+          ssh-keyscan -p "${ECS_PORT:-22}" -H "$ECS_HOST" >> ~/.ssh/known_hosts
+
+      - name: Sync to ECS
+        run: |
+          set -euo pipefail
+          ssh -i ~/.ssh/ecs_deploy_key -p "${ECS_PORT:-22}" "$ECS_USER@$ECS_HOST" \
+            "mkdir -p '$DEPLOY_PATH'"
+          rsync -az --delete \
+            -e "ssh -i ~/.ssh/ecs_deploy_key -p ${ECS_PORT:-22}" \
+            dist-ecs/ "$ECS_USER@$ECS_HOST:$DEPLOY_PATH/"
