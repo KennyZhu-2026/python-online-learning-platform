@@ -51,6 +51,8 @@ npm run build:ecs
 
 推送到 `main` 分支后，GitHub Actions 会自动构建并同步到 ECS 的 `/opt/python_online`。Nginx 将其发布在 `/python-online/`，不会影响服务器根路径上的既有服务。
 
+服务器使用的 Nginx 配置参考位于 `deploy/nginx-customer-agent.conf`。
+
 ## 技术说明
 
 - [Monaco Editor](https://github.com/microsoft/monaco-editor) 提供代码编辑体验。
