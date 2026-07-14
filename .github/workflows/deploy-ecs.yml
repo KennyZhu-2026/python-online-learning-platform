@@ -28,8 +28,10 @@ jobs:
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: python-online/package-lock.json
 
       - name: Build static site
+        working-directory: python-online
         run: |
           set -euo pipefail
           npm ci --ignore-scripts --no-audit --no-fund
@@ -52,4 +54,4 @@ jobs:
             "mkdir -p '$DEPLOY_PATH'"
           rsync -az --delete \
             -e "ssh -i ~/.ssh/ecs_deploy_key -p ${ECS_PORT:-22}" \
-            dist-ecs/ "$ECS_USER@$ECS_HOST:$DEPLOY_PATH/"
+            python-online/dist-ecs/ "$ECS_USER@$ECS_HOST:$DEPLOY_PATH/"

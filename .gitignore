@@ -1,7 +1,10 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules/
+
+# local lesson courseware and rendered videos
+/lesson-video/
 /.pnp
 .pnp.*
 .yarn/*
@@ -12,11 +15,6 @@
 
 # testing
 /coverage
-
-# next.js
-/.next/
-/.vinext/
-/out/
 
 # misc
 .DS_Store
@@ -34,10 +32,7 @@ yarn-error.log*
 # vercel
 .vercel
 
-# typescript
-next-env.d.ts
-/dist/
-/dist-ecs/
-/.wrangler/
-/outputs/
-/work/
+dist/
+dist-ecs/
+outputs/
+work/

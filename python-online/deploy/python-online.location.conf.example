@@ -1,0 +1,12 @@
+# 将此片段放入 ECS 上现有站点的 server { ... } 中。
+# 不要把它作为一份独立的 server/default_server 配置启用。
+
+location = /python-online {
+    return 301 /python-online/;
+}
+
+location /python-online/ {
+    alias /opt/python_online/;
+    index index.html;
+    try_files $uri $uri/ /python-online/index.html;
+}
