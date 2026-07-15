@@ -212,6 +212,13 @@ const COMPLETED_KEY = "python-sprout-completed";
 const childFriendlySnippets = [
   {
     keyword: "print",
+    label: "print()  输出一个数字",
+    detail: "让电脑显示一个数字",
+    documentation: "数字不需要放在引号中，可以直接写在 print() 里面。",
+    insertText: "print(${1:123})$0",
+  },
+  {
+    keyword: "print",
     label: 'print("")  输出一句话',
     detail: "让电脑显示一行文字",
     documentation: "自动补齐 print() 和英文引号，光标会停在引号中间。",
@@ -223,13 +230,6 @@ const childFriendlySnippets = [
     detail: "查看变量里保存的内容",
     documentation: "把变量名放进 print()，运行后就能看到变量的值。",
     insertText: "print(${1:name})$0",
-  },
-  {
-    keyword: "print",
-    label: "print()  输出一个数字",
-    detail: "让电脑显示一个数字",
-    documentation: "数字不需要放在引号中，可以直接写在 print() 里面。",
-    insertText: "print(${1:123})$0",
   },
   {
     keyword: "if",

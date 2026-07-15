@@ -34,6 +34,8 @@ test("ships the Python worker and learning content", async () => {
   assert.match(studio, /for \$\{1:i\} in range/);
   assert.match(studio, /输入 p \/ i \/ f \/ w 查看语法提示/);
   assert.match(studio, /print\(\)  输出一个数字/);
+  assert.ok(studio.indexOf('label: "print()  输出一个数字"') < studio.indexOf("label: 'print(\"\")  输出一句话'"));
+  assert.ok(studio.indexOf("label: 'print(\"\")  输出一句话'") < studio.indexOf('label: "print(变量)  输出变量"'));
   assert.match(studio, /if \/ elif \/ else/);
   assert.match(studio, /for i in range\(\)/);
   assert.match(studio, /for item in \[ \]/);
