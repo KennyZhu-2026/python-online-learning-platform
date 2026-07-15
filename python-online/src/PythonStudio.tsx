@@ -746,7 +746,7 @@ export default function PythonStudio() {
                       localStorage.setItem(`${INPUT_KEY_PREFIX}${lesson.id}`, event.target.value);
                     }}
                     placeholder={"第一个回答\n第二个回答"}
-                    rows={5}
+                    rows={4}
                   />
                 </div>
 

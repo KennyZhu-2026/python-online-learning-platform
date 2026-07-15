@@ -338,8 +338,9 @@ button { color: inherit; }
 }
 
 .workspace {
-  height: calc(100vh - 126px);
-  min-height: 580px;
+  height: calc(100vh - 144px);
+  height: calc(100dvh - 144px);
+  min-height: 540px;
   grid-template-columns: 255px minmax(0, 1fr);
 }
 .main-stage { min-width: 0; min-height: 0; }
@@ -485,7 +486,12 @@ button { color: inherit; }
   font-size: 10px;
 }
 .dark-text-button:hover { background: rgba(255,255,255,.1); color: #fff; }
-.coding-stage .mission-panel { min-height: 0; overflow: auto; }
+.coding-stage .mission-panel { min-height: 0; gap: 10px; overflow: auto; }
+.coding-stage .mission-card,
+.coding-stage .input-card { padding: 14px; }
+.coding-stage .mission-card h3 { margin-block: 4px 7px; font-size: 18px; }
+.coding-stage .three-steps { margin-top: 10px; gap: 5px; }
+.coding-stage .complete-button { padding-block: 11px; }
 .coding-stage .mission-card.is-assignment::after { background: var(--coral); }
 .coding-stage .input-card { margin-top: auto; }
 
@@ -546,4 +552,22 @@ button { color: inherit; }
   .quiz-options { grid-template-columns: 1fr; }
   .coding-primary { grid-template-rows: 360px 160px; }
   .coding-stage .mission-panel { grid-template-columns: 1fr; }
+}
+
+@media (max-height: 720px) and (min-width: 921px) {
+  .workspace {
+    height: calc(100vh - 144px);
+    height: calc(100dvh - 144px);
+    min-height: 0;
+  }
+  .main-stage { min-height: 0; }
+  .coding-primary { grid-template-rows: minmax(260px, 1fr) 155px; }
+  .coding-stage .mission-card,
+  .coding-stage .input-card { padding: 12px; }
+  .coding-stage .mission-card h3 { font-size: 17px; }
+  .coding-stage .mission-text { font-size: 12px; line-height: 1.45; }
+  .coding-stage .three-steps { margin-top: 8px; gap: 4px; }
+  .coding-stage .input-card p { margin-block: 3px 7px; }
+  .coding-stage .input-card textarea { height: 76px; min-height: 76px; resize: none; }
+  .coding-stage .privacy-note { display: none; }
 }
