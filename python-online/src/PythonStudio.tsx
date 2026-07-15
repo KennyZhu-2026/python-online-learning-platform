@@ -225,11 +225,25 @@ const childFriendlySnippets = [
     insertText: "print(${1:name})$0",
   },
   {
+    keyword: "print",
+    label: "print()  输出一个数字",
+    detail: "让电脑显示一个数字",
+    documentation: "数字不需要放在引号中，可以直接写在 print() 里面。",
+    insertText: "print(${1:123})$0",
+  },
+  {
     keyword: "if",
     label: "if / else  条件判断",
     detail: "根据条件选择不同的代码",
     documentation: "自动补齐冒号、else 和四个空格缩进。",
     insertText: 'if ${1:score >= 60}:\n    ${2:print("挑战成功！")}\nelse:\n    ${3:print("继续加油！")}\n$0',
+  },
+  {
+    keyword: "if",
+    label: "if / elif / else  多条件判断",
+    detail: "依次判断三种不同情况",
+    documentation: "自动补齐 if、elif、else、冒号和缩进。",
+    insertText: 'if ${1:score >= 90}:\n    ${2:print("优秀！")}\nelif ${3:score >= 60}:\n    ${4:print("挑战成功！")}\nelse:\n    ${5:print("继续加油！")}\n$0',
   },
   {
     keyword: "input",
@@ -240,17 +254,31 @@ const childFriendlySnippets = [
   },
   {
     keyword: "for",
-    label: "for + range()  重复执行",
+    label: "for i in range()  按次数循环",
     detail: "让一段代码重复运行",
     documentation: "自动补齐 range()、冒号和缩进。",
     insertText: "for ${1:i} in range(${2:5}):\n    ${3:print(i)}\n$0",
   },
   {
-    keyword: "list",
-    label: "列表 []  保存多个内容",
-    detail: "创建一个 Python 列表",
-    documentation: "列表使用方括号，每一项之间用英文逗号隔开。",
-    insertText: '${1:wishes} = ["${2:学会 Python}", "${3:做一个小游戏}"]$0',
+    keyword: "for",
+    label: "for item in [ ]  遍历列表内容",
+    detail: "依次取出方括号中的每一项",
+    documentation: "把列表直接写在 for 循环中，并自动补齐冒号和缩进。",
+    insertText: 'for ${1:item} in [${2:"苹果", "香蕉"}]:\n    ${3:print(item)}\n$0',
+  },
+  {
+    keyword: "for",
+    label: "for item in 变量  遍历已有列表",
+    detail: "依次取出列表变量中的每一项",
+    documentation: "使用一个已经创建好的列表变量进行循环。",
+    insertText: "for ${1:item} in ${2:items}:\n    ${3:print(item)}\n$0",
+  },
+  {
+    keyword: "while",
+    label: "while  条件循环",
+    detail: "条件成立时重复运行",
+    documentation: "模板包含计数变量和更新语句，避免忘记修改变量造成无限循环。",
+    insertText: "${1:count} = 0\nwhile ${2:count < 5}:\n    ${3:print(count)}\n    ${4:count += 1}\n$0",
   },
 ];
 
@@ -519,7 +547,7 @@ export default function PythonStudio() {
             },
           });
           completionProvider = window.monaco.languages.registerCompletionItemProvider("python", {
-            triggerCharacters: ["p", "i", "f", "l"],
+            triggerCharacters: ["p", "i", "f", "w"],
             provideCompletionItems: (model, position) => (
               provideChildFriendlyCompletions(window.monaco!, model, position)
             ),
@@ -810,7 +838,7 @@ export default function PythonStudio() {
                   <div className="panel-toolbar">
                     <div className="file-tab"><span className="python-icon">Py</span> main.py</div>
                     <div className="toolbar-actions">
-                      <span className="syntax-hint">输入 p / i / f / l 查看语法提示</span>
+                      <span className="syntax-hint">输入 p / i / f / w 查看语法提示</span>
                       <span className="shortcut-hint">⌘ / Ctrl + Enter 运行</span>
                       <button className="dark-text-button" onClick={activeTab === "practice" ? resetLesson : clearAssignment}>
                         {activeTab === "practice" ? "恢复示例" : "清空代码"}
