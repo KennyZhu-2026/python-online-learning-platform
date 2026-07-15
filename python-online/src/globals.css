@@ -339,7 +339,7 @@ button { color: inherit; }
 
 .workspace {
   height: calc(100vh - 126px);
-  min-height: 670px;
+  min-height: 580px;
   grid-template-columns: 255px minmax(0, 1fr);
 }
 .main-stage { min-width: 0; min-height: 0; }
@@ -471,7 +471,7 @@ button { color: inherit; }
   min-width: 0;
   min-height: 0;
   display: grid;
-  grid-template-rows: minmax(390px, 1fr) 190px;
+  grid-template-rows: minmax(330px, 1fr) 180px;
   gap: 12px;
 }
 .toolbar-actions { display: flex; align-items: center; gap: 12px; }
@@ -493,9 +493,9 @@ button { color: inherit; }
   .topbar { grid-template-columns: 205px minmax(0, 1fr) auto; gap: 12px; }
   .learning-tabs { margin-left: 0; }
   .workspace { grid-template-columns: 220px minmax(0, 1fr); height: auto; }
-  .main-stage { min-height: 760px; }
+  .main-stage { min-height: 620px; }
   .coding-stage { grid-template-columns: minmax(460px, 1fr) 280px; }
-  .coding-primary { grid-template-rows: 490px 180px; }
+  .coding-primary { grid-template-rows: 390px 170px; }
   .coding-stage .mission-panel { grid-column: auto; display: flex; }
 }
 
@@ -544,6 +544,6 @@ button { color: inherit; }
   .video-card video { max-height: none; }
   .video-card figcaption { align-items: flex-start; flex-direction: column; }
   .quiz-options { grid-template-columns: 1fr; }
-  .coding-primary { grid-template-rows: 430px 180px; }
+  .coding-primary { grid-template-rows: 360px 160px; }
   .coding-stage .mission-panel { grid-template-columns: 1fr; }
 }
