@@ -517,10 +517,6 @@ export default function PythonStudio() {
               <h1>Python 之旅</h1>
             </div>
           </div>
-          <div className="current-lesson-title">
-            <p>第 {lesson.number} 课 · {lesson.stage} <span>一课一闭环</span></p>
-            <strong><span aria-hidden="true">{lesson.emoji}</span> {lesson.title}</strong>
-          </div>
           <div className="topbar-actions">
             {(runtimeState === "loading" || runtimeState === "error") && (
               <div className={`runtime-badge is-${runtimeState}`} role="status">

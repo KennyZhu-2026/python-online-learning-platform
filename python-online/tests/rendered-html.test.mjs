@@ -27,7 +27,6 @@ test("ships the Python worker and learning content", async () => {
   assert.match(studio, /实操练习/);
   assert.match(studio, /语法测评/);
   assert.match(studio, /作业通关/);
-  assert.match(studio, /一课一闭环/);
   assert.match(studio, /lesson1-review-1fps\.mp4/);
   assert.match(studio, /从空白开始挑战/);
   assert.match(studio, /环境初始化成功/);
