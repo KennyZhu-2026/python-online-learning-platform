@@ -62,7 +62,7 @@ button { color: inherit; }
   font-size: 13px; font-weight: 750;
 }
 .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #50a374; box-shadow: 0 0 0 4px rgba(80,163,116,.14); }
-.runtime-badge.is-loading .status-dot, .runtime-badge.is-running .status-dot { background: var(--yellow); animation: pulse 1s infinite alternate; }
+.runtime-badge.is-loading .status-dot { background: var(--yellow); animation: pulse 1s infinite alternate; }
 .runtime-badge.is-error .status-dot { background: var(--coral); }
 .progress-copy { color: var(--muted); font-size: 13px; }
 .progress-copy strong { color: var(--green); font-size: 19px; }
@@ -160,7 +160,68 @@ button { color: inherit; }
 .complete-button:hover, .complete-button.is-done { background: var(--green); color: #fff; }
 .privacy-note { margin: 0; text-align: center; color: var(--muted); font-size: 10px; }
 
+.environment-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(18, 35, 28, .58);
+  backdrop-filter: blur(9px);
+}
+.environment-dialog {
+  width: min(440px, 100%);
+  padding: 34px;
+  border: 1px solid rgba(255, 255, 255, .5);
+  border-radius: 26px;
+  background: var(--paper);
+  text-align: center;
+  box-shadow: 0 28px 80px rgba(10, 30, 21, .28);
+}
+.environment-mark {
+  width: 66px;
+  height: 66px;
+  margin: 0 auto 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 21px 21px 21px 7px;
+  background: var(--green);
+  color: #fff;
+  font-size: 20px;
+  font-weight: 900;
+  box-shadow: inset 0 -5px 0 rgba(0, 0, 0, .1);
+}
+.environment-overlay.is-success .environment-mark { background: #50a374; font-size: 28px; }
+.environment-dialog h2 { margin: 7px 0 24px; font-size: 26px; letter-spacing: -.04em; }
+.environment-progress { height: 12px; overflow: hidden; border-radius: 999px; background: #e6eadf; box-shadow: inset 0 1px 2px rgba(23, 49, 39, .08); }
+.environment-progress span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--green), #62a479); transition: width .35s ease; }
+.environment-overlay.is-success .environment-progress span { background: #50a374; }
+.environment-progress-copy { margin-top: 9px; display: flex; justify-content: flex-end; color: var(--muted); font-size: 11px; }
+.environment-progress-copy strong { color: var(--green); font-size: 12px; }
+.environment-toast {
+  position: fixed;
+  top: 22px;
+  left: 50%;
+  z-index: 9998;
+  padding: 11px 17px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(80, 163, 116, .28);
+  border-radius: 999px;
+  background: #f4fbf5;
+  color: var(--green-dark);
+  font-size: 13px;
+  font-weight: 800;
+  box-shadow: 0 12px 32px rgba(35, 86, 64, .18);
+  transform: translateX(-50%);
+  animation: toast-in .24s ease-out;
+}
+.environment-toast span { width: 21px; height: 21px; display: grid; place-items: center; border-radius: 50%; background: #50a374; color: #fff; font-size: 12px; }
+
 @keyframes pulse { to { transform: scale(1.35); opacity: .65; } }
+@keyframes toast-in { from { opacity: 0; transform: translate(-50%, -8px); } }
 
 @media (max-width: 1180px) {
   .workspace { grid-template-columns: 220px minmax(480px, 1fr); }
@@ -191,6 +252,8 @@ button { color: inherit; }
   .run-bar { justify-content: flex-end; }
   .mission-panel { display: grid; grid-template-columns: 1fr; margin-top: 10px; }
   .complete-button { min-height: 48px; }
+  .environment-dialog { padding: 28px 22px; border-radius: 22px; }
+  .environment-dialog h2 { font-size: 23px; }
 }
 
 @media (max-height: 760px) and (min-width: 1181px) {

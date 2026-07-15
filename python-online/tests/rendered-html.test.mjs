@@ -21,8 +21,14 @@ test("ships the Python worker and learning content", async () => {
 
   const studio = await readFile(new URL("../src/PythonStudio.tsx", import.meta.url), "utf8");
   assert.match(studio, /启动 Python 魔法盒/);
+  assert.match(studio, /Python 之旅/);
+  assert.match(studio, /学习编程 · 开始创造/);
+  assert.match(studio, /环境初始化成功/);
+  assert.match(studio, /environment-overlay/);
+  assert.doesNotMatch(studio, /Python 已就绪/);
   assert.match(studio, /运行代码/);
   assert.match(studio, /new Worker\("\.\/python-worker\.js", \{ type: "module" \}\)/);
+  assert.match(worker, /type: "progress"/);
 
   await access(new URL("../dist-ecs/favicon.svg", import.meta.url));
   await access(new URL("../dist-ecs/og.png", import.meta.url));

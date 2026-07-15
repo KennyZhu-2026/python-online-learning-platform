@@ -7,11 +7,13 @@ let inputQueue = [];
 
 async function initialize() {
   try {
+    self.postMessage({ type: "progress", value: 36 });
     pyodide = await loadPyodide({
       indexURL: PYODIDE_BASE,
       stdout: (text) => self.postMessage({ type: "stdout", text: `${text}\n` }),
       stderr: (text) => self.postMessage({ type: "stderr", text: `${text}\n` }),
     });
+    self.postMessage({ type: "progress", value: 92 });
     pyodide.setStdin({
       stdin: () => {
         const value = inputQueue.shift() ?? "";

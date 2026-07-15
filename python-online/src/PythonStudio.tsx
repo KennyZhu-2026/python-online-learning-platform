@@ -159,11 +159,16 @@ export default function PythonStudio() {
   const runRef = useRef<() => void>(() => undefined);
   const initialCodeRef = useRef(lessons[0].starterCode);
   const selectedIdRef = useRef(lessons[0].id);
+  const overlayTimerRef = useRef<number | null>(null);
+  const toastTimerRef = useRef<number | null>(null);
   const [selectedId, setSelectedId] = useState(lessons[0].id);
   const [code, setCode] = useState(lessons[0].starterCode);
   const [inputText, setInputText] = useState(lessons[0].inputs ?? "");
   const [output, setOutput] = useState("点击“运行代码”，看看会发生什么吧！");
   const [runtimeState, setRuntimeState] = useState<"loading" | "ready" | "running" | "error">("loading");
+  const [loadProgress, setLoadProgress] = useState(0);
+  const [showInitOverlay, setShowInitOverlay] = useState(true);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [editorState, setEditorState] = useState<"loading" | "ready" | "fallback">("loading");
   const [completed, setCompleted] = useState<string[]>([]);
   const [showHints, setShowHints] = useState(false);
@@ -181,13 +186,24 @@ export default function PythonStudio() {
 
   const createWorker = useCallback(() => {
     workerRef.current?.terminate();
+    if (overlayTimerRef.current !== null) window.clearTimeout(overlayTimerRef.current);
+    if (toastTimerRef.current !== null) window.clearTimeout(toastTimerRef.current);
     setRuntimeState("loading");
+    setLoadProgress(0);
+    setShowInitOverlay(true);
+    setShowSuccessToast(false);
     const worker = new Worker("./python-worker.js", { type: "module" });
     workerRef.current = worker;
-    worker.onmessage = (event: MessageEvent<{ type: string; text?: string }>) => {
+    worker.onmessage = (event: MessageEvent<{ type: string; text?: string; value?: number }>) => {
       const message = event.data;
       if (message.type === "ready") {
+        setLoadProgress(100);
         setRuntimeState("ready");
+        setShowSuccessToast(true);
+        overlayTimerRef.current = window.setTimeout(() => setShowInitOverlay(false), 700);
+        toastTimerRef.current = window.setTimeout(() => setShowSuccessToast(false), 3200);
+      } else if (message.type === "progress") {
+        setLoadProgress((previous) => Math.max(previous, message.value ?? previous));
       } else if (message.type === "stdout" || message.type === "stderr") {
         setOutput((previous) => previous + (message.text ?? ""));
       } else if (message.type === "done") {
@@ -199,6 +215,7 @@ export default function PythonStudio() {
         setOutput((previous) => `${previous}\n\n🕵️ 程序侦探提示\n${explainError(raw)}\n\n${raw}`.trim());
       } else if (message.type === "load-error") {
         setRuntimeState("error");
+        setShowInitOverlay(false);
         console.error("Python environment failed to load:", message.text);
         setOutput("Python 魔法盒加载失败了。请检查网络后点击“重新加载 Python 环境”。");
       }
@@ -206,6 +223,7 @@ export default function PythonStudio() {
     worker.onerror = (event) => {
       console.error("Python worker error:", event.message);
       setRuntimeState("error");
+      setShowInitOverlay(false);
       setOutput("Python 魔法盒暂时没有加载成功，请点击“重新加载 Python 环境”再试。 ");
     };
   }, []);
@@ -226,6 +244,19 @@ export default function PythonStudio() {
   useEffect(() => {
     runRef.current = runCode;
   }, [runCode]);
+
+  useEffect(() => {
+    if (runtimeState !== "loading") return undefined;
+    const progressTimer = window.setInterval(() => {
+      setLoadProgress((previous) => {
+        if (previous >= 88) return previous;
+        if (previous < 36) return Math.min(36, previous + 3);
+        if (previous < 70) return previous + 2;
+        return previous + 1;
+      });
+    }, 420);
+    return () => window.clearInterval(progressTimer);
+  }, [runtimeState]);
 
   useEffect(() => {
     const query = window.matchMedia("(max-width: 820px)");
@@ -255,6 +286,8 @@ export default function PythonStudio() {
       window.cancelAnimationFrame(restoreFrame);
       query.removeEventListener("change", sync);
       workerRef.current?.terminate();
+      if (overlayTimerRef.current !== null) window.clearTimeout(overlayTimerRef.current);
+      if (toastTimerRef.current !== null) window.clearTimeout(toastTimerRef.current);
     };
   }, [createWorker]);
 
@@ -346,7 +379,7 @@ export default function PythonStudio() {
     setInputText(nextInput);
     editorRef.current?.setValue(nextCode);
     editorRef.current?.focus();
-    setOutput("新关卡准备好啦，先猜一猜运行结果，再点击“运行代码”！");
+    setOutput("新一课准备好啦，先猜一猜运行结果，再点击“运行代码”！");
   };
 
   const resetLesson = () => {
@@ -372,41 +405,35 @@ export default function PythonStudio() {
     createWorker();
   };
 
-  const statusText =
-    runtimeState === "ready"
-      ? "Python 已就绪"
-      : runtimeState === "running"
-        ? "正在运行"
-        : runtimeState === "error"
-          ? "环境加载失败"
-          : "正在唤醒 Python";
-
   return (
+    <>
     <main className="studio-shell">
       <header className="topbar">
         <div className="brand-block">
           <span className="brand-mark" aria-hidden="true">Py</span>
           <div>
-            <p className="eyebrow">打开浏览器 · 开始创造</p>
-            <h1>Python 小芽</h1>
+            <p className="eyebrow">学习编程 · 开始创造</p>
+            <h1>Python 之旅</h1>
           </div>
         </div>
         <div className="topbar-actions">
-          <div className={`runtime-badge is-${runtimeState}`} role="status">
-            <span className="status-dot" />
-            {statusText}
-          </div>
+          {(runtimeState === "loading" || runtimeState === "error") && (
+            <div className={`runtime-badge is-${runtimeState}`} role="status">
+              <span className="status-dot" />
+              {runtimeState === "loading" ? "环境准备中" : "环境初始化失败"}
+            </div>
+          )}
           <div className="progress-copy">
-            <strong>{completed.length}</strong> / {lessons.length} 关
+            <strong>{completed.length}</strong> / {lessons.length} 课
           </div>
         </div>
       </header>
 
       <section className="workspace">
-        <aside className="lesson-rail" aria-label="课程关卡">
+        <aside className="lesson-rail" aria-label="课程列表">
           <div className="rail-heading">
             <span>学习地图</span>
-            <span className="rail-count">{lessons.length} 关</span>
+            <span className="rail-count">{lessons.length} 课</span>
           </div>
           <div className="lesson-list">
             {lessons.map((item) => {
@@ -438,7 +465,7 @@ export default function PythonStudio() {
         <section className="coding-zone">
           <div className="lesson-banner">
             <div>
-              <p className="eyebrow">第 {lesson.number} 关 · {lesson.stage}</p>
+              <p className="eyebrow">第 {lesson.number} 课 · {lesson.stage}</p>
               <h2>{lesson.emoji} {lesson.title}</h2>
               <p>{lesson.goal}</p>
             </div>
@@ -486,7 +513,7 @@ export default function PythonStudio() {
 
         <aside className="mission-panel">
           <div className="mission-card">
-            <p className="eyebrow">本关任务</p>
+            <p className="eyebrow">本课任务</p>
             <h3>先模仿，再创造</h3>
             <p className="mission-text">{lesson.task}</p>
             <div className="three-steps">
@@ -526,11 +553,37 @@ export default function PythonStudio() {
           </div>
 
           <button className={`complete-button ${completed.includes(lesson.id) ? "is-done" : ""}`} onClick={toggleCompleted}>
-            {completed.includes(lesson.id) ? "✓ 已完成这一关" : "我完成这一关了"}
+            {completed.includes(lesson.id) ? "✓ 已完成这一课" : "我完成这一课了"}
           </button>
           <p className="privacy-note">🔒 代码在你的浏览器里运行，不会上传。</p>
         </aside>
       </section>
     </main>
+    {showInitOverlay && (
+      <div className={`environment-overlay ${loadProgress === 100 ? "is-success" : ""}`} role="dialog" aria-modal="true" aria-labelledby="environment-title">
+        <div className="environment-dialog">
+          <div className="environment-mark" aria-hidden="true">{loadProgress === 100 ? "✓" : "Py"}</div>
+          <p className="eyebrow">Python 运行环境</p>
+          <h2 id="environment-title">{loadProgress === 100 ? "环境初始化成功" : "环境准备中"}</h2>
+          <div
+            className="environment-progress"
+            role="progressbar"
+            aria-label="Python 环境加载进度"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={loadProgress}
+          >
+            <span style={{ width: `${loadProgress}%` }} />
+          </div>
+          <div className="environment-progress-copy">
+            <strong>{loadProgress}%</strong>
+          </div>
+        </div>
+      </div>
+    )}
+    {showSuccessToast && !showInitOverlay && (
+      <div className="environment-toast" role="status"><span aria-hidden="true">✓</span> 环境初始化成功</div>
+    )}
+    </>
   );
 }
