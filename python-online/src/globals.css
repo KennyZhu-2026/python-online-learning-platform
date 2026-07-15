@@ -284,14 +284,14 @@ button { color: inherit; }
   position: relative;
   margin: 0;
   min-width: 0;
-  padding: 5px;
+  padding: 0;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   align-self: center;
-  gap: 5px;
+  gap: 8px;
   border-top: 0;
-  border-radius: 999px;
-  background: rgba(220, 236, 223, .38);
+  border-radius: 0;
+  background: transparent;
 }
 .learning-tabs button {
   position: relative;
@@ -325,7 +325,7 @@ button { color: inherit; }
   color: #718078;
   font-size: 11px;
 }
-.learning-tabs button:hover { color: var(--green-dark); background: rgba(255, 255, 255, .72); }
+.learning-tabs button:hover { color: var(--green-dark); background: rgba(220, 236, 223, .62); }
 .learning-tabs button.is-active {
   color: #fff;
   background: var(--green-dark);

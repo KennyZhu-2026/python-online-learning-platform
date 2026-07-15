@@ -133,10 +133,10 @@ const lessons: Lesson[] = [
 ];
 
 const learningTabs: Array<{ id: LearningTab; label: string; icon: string }> = [
-  { id: "knowledge", label: "知识讲解", icon: "学" },
-  { id: "practice", label: "实操练习", icon: "练" },
-  { id: "quiz", label: "语法测评", icon: "测" },
-  { id: "assignment", label: "作业通关", icon: "评" },
+  { id: "knowledge", label: "知识讲解", icon: "▶" },
+  { id: "practice", label: "实操练习", icon: "⌨" },
+  { id: "quiz", label: "语法测评", icon: "✓" },
+  { id: "assignment", label: "作业通关", icon: "★" },
 ];
 
 const quizQuestions: QuizQuestion[] = [
