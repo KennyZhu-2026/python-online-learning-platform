@@ -29,6 +29,10 @@ test("ships the Python worker and learning content", async () => {
   assert.match(studio, /作业通关/);
   assert.match(studio, /lesson1-review-1fps\.mp4/);
   assert.match(studio, /从空白开始挑战/);
+  assert.match(studio, /registerCompletionItemProvider\("python"/);
+  assert.match(studio, /CompletionItemInsertTextRule\.InsertAsSnippet/);
+  assert.match(studio, /for \$\{1:i\} in range/);
+  assert.match(studio, /输入 p \/ i \/ f \/ l 查看语法提示/);
   assert.match(studio, /环境初始化成功/);
   assert.match(studio, /environment-overlay/);
   assert.doesNotMatch(studio, /Python 已就绪/);

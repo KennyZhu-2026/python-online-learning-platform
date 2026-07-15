@@ -27,9 +27,12 @@ type QuizQuestion = {
 type MonacoEditor = {
   getValue: () => string;
   setValue: (value: string) => void;
+  getPosition: () => MonacoPosition | null;
+  getModel: () => MonacoModel | null;
   focus: () => void;
   dispose: () => void;
   layout: () => void;
+  trigger: (source: string, action: string, payload: Record<string, never>) => void;
   onDidChangeModelContent: (listener: () => void) => { dispose: () => void };
   addAction: (action: {
     id: string;
@@ -39,12 +42,49 @@ type MonacoEditor = {
   }) => void;
 };
 
+type MonacoPosition = { lineNumber: number; column: number };
+
+type MonacoModel = {
+  getLineContent: (lineNumber: number) => string;
+  getWordUntilPosition: (position: MonacoPosition) => { startColumn: number; endColumn: number; word: string };
+};
+
+type MonacoCompletionItem = {
+  label: string;
+  detail: string;
+  documentation: string;
+  kind: number;
+  insertText: string;
+  insertTextRules: number;
+  sortText: string;
+  range: {
+    startLineNumber: number;
+    endLineNumber: number;
+    startColumn: number;
+    endColumn: number;
+  };
+};
+
 declare global {
   interface Window {
     monaco?: {
       editor: {
         create: (element: HTMLElement, options: Record<string, unknown>) => MonacoEditor;
         defineTheme: (name: string, theme: Record<string, unknown>) => void;
+      };
+      languages: {
+        CompletionItemKind: { Snippet: number };
+        CompletionItemInsertTextRule: { InsertAsSnippet: number };
+        registerCompletionItemProvider: (
+          language: string,
+          provider: {
+            triggerCharacters: string[];
+            provideCompletionItems: (
+              model: MonacoModel,
+              position: MonacoPosition,
+            ) => { suggestions: MonacoCompletionItem[] };
+          },
+        ) => { dispose: () => void };
       };
       KeyMod: { CtrlCmd: number };
       KeyCode: { Enter: number };
@@ -168,6 +208,92 @@ const CODE_KEY_PREFIX = "python-sprout-code-";
 const INPUT_KEY_PREFIX = "python-sprout-input-";
 const ASSIGNMENT_KEY_PREFIX = "python-sprout-assignment-";
 const COMPLETED_KEY = "python-sprout-completed";
+
+const childFriendlySnippets = [
+  {
+    keyword: "print",
+    label: 'print("")  输出一句话',
+    detail: "让电脑显示一行文字",
+    documentation: "自动补齐 print() 和英文引号，光标会停在引号中间。",
+    insertText: 'print("${1:你好，Python！}")$0',
+  },
+  {
+    keyword: "print",
+    label: "print(变量)  输出变量",
+    detail: "查看变量里保存的内容",
+    documentation: "把变量名放进 print()，运行后就能看到变量的值。",
+    insertText: "print(${1:name})$0",
+  },
+  {
+    keyword: "if",
+    label: "if / else  条件判断",
+    detail: "根据条件选择不同的代码",
+    documentation: "自动补齐冒号、else 和四个空格缩进。",
+    insertText: 'if ${1:score >= 60}:\n    ${2:print("挑战成功！")}\nelse:\n    ${3:print("继续加油！")}\n$0',
+  },
+  {
+    keyword: "input",
+    label: 'input("")  获取回答',
+    detail: "让程序向使用者提问",
+    documentation: "输入的回答会保存到左边的变量中。",
+    insertText: '${1:name} = input("${2:你叫什么名字？}")$0',
+  },
+  {
+    keyword: "for",
+    label: "for + range()  重复执行",
+    detail: "让一段代码重复运行",
+    documentation: "自动补齐 range()、冒号和缩进。",
+    insertText: "for ${1:i} in range(${2:5}):\n    ${3:print(i)}\n$0",
+  },
+  {
+    keyword: "list",
+    label: "列表 []  保存多个内容",
+    detail: "创建一个 Python 列表",
+    documentation: "列表使用方括号，每一项之间用英文逗号隔开。",
+    insertText: '${1:wishes} = ["${2:学会 Python}", "${3:做一个小游戏}"]$0',
+  },
+];
+
+function provideChildFriendlyCompletions(
+  monaco: NonNullable<Window["monaco"]>,
+  model: MonacoModel,
+  position: MonacoPosition,
+) {
+  const lineBeforeCursor = model.getLineContent(position.lineNumber).slice(0, position.column - 1);
+  const prefix = lineBeforeCursor.trim().toLowerCase();
+  if (!/^[a-z]+$/.test(prefix)) return { suggestions: [] };
+
+  const word = model.getWordUntilPosition(position);
+  const range = {
+    startLineNumber: position.lineNumber,
+    endLineNumber: position.lineNumber,
+    startColumn: word.startColumn,
+    endColumn: word.endColumn,
+  };
+  const suggestions = childFriendlySnippets
+    .filter((snippet) => snippet.keyword.startsWith(prefix))
+    .map((snippet, index) => ({
+      label: snippet.label,
+      detail: snippet.detail,
+      documentation: snippet.documentation,
+      kind: monaco.languages.CompletionItemKind.Snippet,
+      insertText: snippet.insertText,
+      insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+      sortText: `0${index}`,
+      range,
+    }));
+  return { suggestions };
+}
+
+function shouldTriggerChildFriendlyCompletions(model: MonacoModel, position: MonacoPosition) {
+  const prefix = model
+    .getLineContent(position.lineNumber)
+    .slice(0, position.column - 1)
+    .trim()
+    .toLowerCase();
+  return /^[a-z]+$/.test(prefix)
+    && childFriendlySnippets.some((snippet) => snippet.keyword.startsWith(prefix));
+}
 
 function loadScript(src: string) {
   return new Promise<void>((resolve, reject) => {
@@ -366,6 +492,8 @@ export default function PythonStudio() {
     }
     let disposed = false;
     let changeListener: { dispose: () => void } | undefined;
+    let completionProvider: { dispose: () => void } | undefined;
+    let completionTimer: number | undefined;
     loadScript(`${MONACO_BASE}/loader.js`)
       .then(() => {
         window.require?.config({ paths: { vs: MONACO_BASE } });
@@ -390,6 +518,12 @@ export default function PythonStudio() {
               "editorCursor.foreground": "#F6C978",
             },
           });
+          completionProvider = window.monaco.languages.registerCompletionItemProvider("python", {
+            triggerCharacters: ["p", "i", "f", "l"],
+            provideCompletionItems: (model, position) => (
+              provideChildFriendlyCompletions(window.monaco!, model, position)
+            ),
+          });
           const editor = window.monaco.editor.create(editorHostRef.current, {
             value: initialCodeRef.current,
             language: "python",
@@ -405,15 +539,29 @@ export default function PythonStudio() {
             tabSize: 4,
             insertSpaces: true,
             wordWrap: "on",
-            quickSuggestions: false,
-            suggestOnTriggerCharacters: false,
+            quickSuggestions: { other: true, comments: false, strings: false },
+            suggestOnTriggerCharacters: true,
+            wordBasedSuggestions: "off",
+            snippetSuggestions: "top",
+            tabCompletion: "on",
+            acceptSuggestionOnEnter: "on",
             overviewRulerBorder: false,
             hideCursorInOverviewRuler: true,
             contextmenu: true,
             ariaLabel: "Python 代码编辑器",
           });
           editorRef.current = editor;
-          changeListener = editor.onDidChangeModelContent(() => saveEditorValue(editor.getValue()));
+          changeListener = editor.onDidChangeModelContent(() => {
+            saveEditorValue(editor.getValue());
+            if (completionTimer !== undefined) window.clearTimeout(completionTimer);
+            completionTimer = window.setTimeout(() => {
+              const model = editor.getModel();
+              const position = editor.getPosition();
+              if (model && position && shouldTriggerChildFriendlyCompletions(model, position)) {
+                editor.trigger("child-friendly-completion", "editor.action.triggerSuggest", {});
+              }
+            }, 40);
+          });
           editor.addAction({
             id: "run-python-code",
             label: "运行 Python 代码",
@@ -427,6 +575,8 @@ export default function PythonStudio() {
     return () => {
       disposed = true;
       changeListener?.dispose();
+      completionProvider?.dispose();
+      if (completionTimer !== undefined) window.clearTimeout(completionTimer);
       editorRef.current?.dispose();
       editorRef.current = null;
     };
@@ -660,6 +810,7 @@ export default function PythonStudio() {
                   <div className="panel-toolbar">
                     <div className="file-tab"><span className="python-icon">Py</span> main.py</div>
                     <div className="toolbar-actions">
+                      <span className="syntax-hint">输入 p / i / f / l 查看语法提示</span>
                       <span className="shortcut-hint">⌘ / Ctrl + Enter 运行</span>
                       <button className="dark-text-button" onClick={activeTab === "practice" ? resetLesson : clearAssignment}>
                         {activeTab === "practice" ? "恢复示例" : "清空代码"}

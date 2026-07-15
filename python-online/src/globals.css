@@ -476,6 +476,7 @@ button { color: inherit; }
   gap: 12px;
 }
 .toolbar-actions { display: flex; align-items: center; gap: 12px; }
+.syntax-hint { color: #91a39a; font-size: 10px; }
 .dark-text-button {
   padding: 5px 8px;
   border: 1px solid rgba(255,255,255,.14);
@@ -503,6 +504,7 @@ button { color: inherit; }
   .coding-stage { grid-template-columns: minmax(460px, 1fr) 280px; }
   .coding-primary { grid-template-rows: 390px 170px; }
   .coding-stage .mission-panel { grid-column: auto; display: flex; }
+  .syntax-hint { display: none; }
 }
 
 @media (max-width: 1080px) {
