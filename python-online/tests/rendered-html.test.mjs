@@ -6,7 +6,7 @@ test("builds the ECS static application shell", async () => {
   const html = await readFile(new URL("../dist-ecs/index.html", import.meta.url), "utf8");
 
   assert.match(html, /<html lang="zh-CN">/i);
-  assert.match(html, /<title>Python 小芽/);
+  assert.match(html, /<title>Python 之旅/);
   assert.match(html, /<div id="root"><\/div>/);
   assert.match(html, /\/python-online\/assets\//);
 });
@@ -23,6 +23,13 @@ test("ships the Python worker and learning content", async () => {
   assert.match(studio, /启动 Python 魔法盒/);
   assert.match(studio, /Python 之旅/);
   assert.match(studio, /学习编程 · 开始创造/);
+  assert.match(studio, /知识讲解/);
+  assert.match(studio, /实操练习/);
+  assert.match(studio, /语法测评/);
+  assert.match(studio, /作业通关/);
+  assert.match(studio, /一课一闭环/);
+  assert.match(studio, /lesson1-review-1fps\.mp4/);
+  assert.match(studio, /从空白开始挑战/);
   assert.match(studio, /环境初始化成功/);
   assert.match(studio, /environment-overlay/);
   assert.doesNotMatch(studio, /Python 已就绪/);
@@ -32,4 +39,5 @@ test("ships the Python worker and learning content", async () => {
 
   await access(new URL("../dist-ecs/favicon.svg", import.meta.url));
   await access(new URL("../dist-ecs/og.png", import.meta.url));
+  await access(new URL("../dist-ecs/videos/lesson1-review-1fps.mp4", import.meta.url));
 });
