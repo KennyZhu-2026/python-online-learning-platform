@@ -14,15 +14,7 @@ type Lesson = {
   inputs?: string;
 };
 
-type LearningTab = "knowledge" | "practice" | "quiz" | "assignment";
-
-type QuizQuestion = {
-  id: string;
-  question: string;
-  options: string[];
-  answer: number;
-  explanation: string;
-};
+type LearningTab = "knowledge" | "practice" | "assignment";
 
 type MonacoEditor = {
   getValue: () => string;
@@ -175,31 +167,6 @@ const lessons: Lesson[] = [
 const learningTabs: Array<{ id: LearningTab; label: string; icon: string }> = [
   { id: "knowledge", label: "知识讲解", icon: "▶" },
   { id: "practice", label: "代码练习", icon: "</>" },
-  { id: "quiz", label: "语法小测", icon: "✓" },
-];
-
-const quizQuestions: QuizQuestion[] = [
-  {
-    id: "value-type",
-    question: "下面哪个选项是 Python 中常见的变量类型？",
-    options: ["字符串 str", "文件夹 folder", "画笔 brush", "网页 page"],
-    answer: 0,
-    explanation: "str 表示字符串，用来保存姓名、句子等文字内容。",
-  },
-  {
-    id: "print",
-    question: "想让电脑在屏幕上显示一句话，应该使用哪个命令？",
-    options: ["show()", "say()", "print()", "writeword()"],
-    answer: 2,
-    explanation: "print() 是 Python 中最常用的输出命令。",
-  },
-  {
-    id: "variable-name",
-    question: "下面哪个变量名写法是正确的？",
-    options: ["1name", "my-name", "my_name", "我的 name"],
-    answer: 2,
-    explanation: "变量名可以使用字母、数字和下划线，但不能以数字开头。",
-  },
 ];
 
 const MONACO_BASE = "https://cdn.jsdelivr.net/npm/monaco-editor@0.55.1/min/vs";
@@ -377,7 +344,6 @@ export default function PythonStudio() {
   const [editorState, setEditorState] = useState<"loading" | "ready" | "fallback">("loading");
   const [completed, setCompleted] = useState<string[]>([]);
   const [showHints, setShowHints] = useState(false);
-  const [quizAnswers, setQuizAnswers] = useState<Record<string, number>>({});
   const [isCompact, setIsCompact] = useState(false);
 
   const lesson = useMemo(
@@ -618,7 +584,6 @@ export default function PythonStudio() {
     selectedIdRef.current = nextLesson.id;
     setSelectedId(nextLesson.id);
     setShowHints(false);
-    setQuizAnswers({});
     const nextCode = localStorage.getItem(`${CODE_KEY_PREFIX}${nextLesson.id}`) ?? nextLesson.starterCode;
     const nextAssignment = localStorage.getItem(`${ASSIGNMENT_KEY_PREFIX}${nextLesson.id}`) ?? "";
     const nextInput = localStorage.getItem(`${INPUT_KEY_PREFIX}${nextLesson.id}`) ?? nextLesson.inputs ?? "";
@@ -780,53 +745,6 @@ export default function PythonStudio() {
                   {lesson.number === 1 ? "跟着视频认识第一行 Python 代码。" : "本课视频正在制作，当前暂用第一课样片展示播放效果。"}
                 </figcaption>
               </figure>
-            </section>
-          )}
-
-          {activeTab === "quiz" && (
-            <section className="quiz-stage" role="tabpanel" aria-label="语法小测">
-              <div className="stage-heading">
-                <div>
-                  <p className="eyebrow">语法小测</p>
-                  <h2>小小知识挑战</h2>
-                  <p>选择你认为正确的答案，答完马上看到讲解。</p>
-                </div>
-                <span className="quiz-score">
-                  {Object.keys(quizAnswers).length} / {quizQuestions.length} 已作答
-                </span>
-              </div>
-              <div className="quiz-list">
-                {quizQuestions.map((question, questionIndex) => {
-                  const chosen = quizAnswers[question.id];
-                  return (
-                    <fieldset className="quiz-card" key={question.id}>
-                      <legend><span>{questionIndex + 1}</span>{question.question}</legend>
-                      <div className="quiz-options">
-                        {question.options.map((option, optionIndex) => (
-                          <label
-                            className={`${chosen === optionIndex ? "is-selected" : ""} ${chosen !== undefined && optionIndex === question.answer ? "is-correct" : ""}`}
-                            key={option}
-                          >
-                            <input
-                              type="radio"
-                              name={`quiz-${lesson.id}-${question.id}`}
-                              checked={chosen === optionIndex}
-                              onChange={() => setQuizAnswers((previous) => ({ ...previous, [question.id]: optionIndex }))}
-                            />
-                            <span>{String.fromCharCode(65 + optionIndex)}</span>
-                            {option}
-                          </label>
-                        ))}
-                      </div>
-                      {chosen !== undefined && (
-                        <p className={`quiz-feedback ${chosen === question.answer ? "is-correct" : "is-wrong"}`}>
-                          {chosen === question.answer ? "答对啦！" : "再记一遍："} {question.explanation}
-                        </p>
-                      )}
-                    </fieldset>
-                  );
-                })}
-              </div>
             </section>
           )}
 

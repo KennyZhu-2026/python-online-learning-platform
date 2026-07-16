@@ -6,7 +6,7 @@ test("builds the ECS static application shell", async () => {
   const html = await readFile(new URL("../dist-ecs/index.html", import.meta.url), "utf8");
 
   assert.match(html, /<html lang="zh-CN">/i);
-  assert.match(html, /<title>Python 之旅/);
+  assert.match(html, /<title>Python之旅 \| 零基础入门<\/title>/);
   assert.match(html, /<div id="root"><\/div>/);
   assert.match(html, /\/python-online\/assets\//);
 });
@@ -25,7 +25,6 @@ test("ships the Python worker and learning content", async () => {
   assert.match(studio, /学习编程 · 开始创造/);
   assert.match(studio, /知识讲解/);
   assert.match(studio, /代码练习/);
-  assert.match(studio, /语法小测/);
   assert.match(studio, /lesson1-review-1fps\.mp4/);
   assert.match(studio, /从空白开始挑战/);
   assert.match(studio, /registerCompletionItemProvider\("python"/);
