@@ -30,7 +30,11 @@ test("ships the Python worker and learning content", async () => {
   assert.match(studio, /registerCompletionItemProvider\("python"/);
   assert.match(studio, /CompletionItemInsertTextRule\.InsertAsSnippet/);
   assert.match(studio, /for \$\{1:i\} in range/);
-  assert.match(studio, /输入 p \/ i \/ f \/ w 查看语法提示/);
+  assert.doesNotMatch(studio, /输入 p \/ i \/ f \/ w 查看语法提示/);
+  assert.match(studio, /会说话的欢迎卡/);
+  assert.match(studio, /火箭发射倒计时/);
+  assert.match(studio, /mission-hint-button/);
+  assert.match(studio, /完成任务/);
   assert.match(studio, /print\(\)  输出一个数字/);
   assert.ok(studio.indexOf('label: "print()  输出一个数字"') < studio.indexOf("label: 'print(\"\")  输出一句话'"));
   assert.ok(studio.indexOf("label: 'print(\"\")  输出一句话'") < studio.indexOf('label: "print(变量)  输出变量"'));

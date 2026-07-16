@@ -143,6 +143,7 @@ button { color: inherit; }
 }
 .mission-card { position: relative; overflow: hidden; }
 .mission-card::after { content: ""; position: absolute; width: 95px; height: 95px; right: -38px; top: -38px; border-radius: 50%; background: var(--yellow); opacity: .28; }
+.mission-card > * { position: relative; z-index: 1; }
 .mission-card h3 { margin: 6px 0 9px; font-size: 19px; }
 .mission-text { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.6; }
 .three-steps { margin-top: 14px; display: grid; gap: 7px; }
@@ -156,6 +157,10 @@ button { color: inherit; }
 .hint-toggle { width: 100%; padding: 14px 16px; display: flex; justify-content: space-between; border: 0; background: transparent; cursor: pointer; font-weight: 750; font-size: 12px; }
 .hint-toggle span:last-child { color: var(--green); }
 .hint-card ul { margin: 0; padding: 0 18px 15px 34px; color: var(--muted); font-size: 11px; line-height: 1.6; }
+.mission-hints { margin: 11px 0 0; padding: 10px 12px 10px 28px; border-radius: 11px; background: var(--green-pale); color: var(--green-dark); font-size: 11px; line-height: 1.6; }
+.mission-card-actions { margin-top: 8px; display: flex; justify-content: flex-end; }
+.mission-hint-button { padding: 6px 8px; border: 0; border-radius: 9px; background: transparent; color: var(--green); cursor: pointer; font-size: 11px; font-weight: 850; }
+.mission-hint-button:hover { background: var(--green-pale); color: var(--green-dark); }
 .complete-button { margin-top: auto; width: 100%; padding: 13px; border: 1px solid var(--green); border-radius: 13px; background: transparent; color: var(--green); cursor: pointer; font-weight: 850; }
 .complete-button:hover, .complete-button.is-done { background: var(--green); color: #fff; }
 .privacy-note { margin: 0; text-align: center; color: var(--muted); font-size: 10px; }
@@ -476,7 +481,6 @@ button { color: inherit; }
   gap: 12px;
 }
 .toolbar-actions { display: flex; align-items: center; gap: 12px; }
-.syntax-hint { color: #91a39a; font-size: 10px; }
 .dark-text-button {
   padding: 5px 8px;
   border: 1px solid rgba(255,255,255,.14);
@@ -504,7 +508,6 @@ button { color: inherit; }
   .coding-stage { grid-template-columns: minmax(460px, 1fr) 280px; }
   .coding-primary { grid-template-rows: 390px 170px; }
   .coding-stage .mission-panel { grid-column: auto; display: flex; }
-  .syntax-hint { display: none; }
 }
 
 @media (max-width: 1080px) {

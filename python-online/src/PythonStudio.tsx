@@ -7,7 +7,9 @@ type Lesson = {
   emoji: string;
   stage: string;
   goal: string;
+  taskTitle: string;
   task: string;
+  taskSteps: string[];
   homework: string;
   hints: string[];
   starterCode: string;
@@ -96,7 +98,9 @@ const lessons: Lesson[] = [
     emoji: "👋",
     stage: "认识程序",
     goal: "认识代码从上到下运行，并用 print() 让电脑说话。",
-    task: "把欢迎语改成你的昵称，再增加一句自己的学习愿望。",
+    taskTitle: "会说话的欢迎卡",
+    task: "制作一张属于你的 Python 欢迎卡，让电脑说出你的昵称和学习愿望。",
+    taskSteps: ["把“朵朵”改成你的昵称", "再增加一句自己的学习愿望", "运行代码，检查两句话是否正确显示"],
     homework: "从空白文件开始，写一个不少于 3 行的自我介绍程序。请至少使用 2 次 print()，让电脑说出你的名字、爱好和一个学习愿望。",
     hints: ["文字要放在英文引号里", "每个 print() 会输出一行", "# 开头的内容是给人看的注释"],
     starterCode: `# 我的第一个 Python 程序\nprint("朵朵开始学习 Python 啦！")\nprint("今天是我的第一段程序。")`,
@@ -108,7 +112,9 @@ const lessons: Lesson[] = [
     emoji: "📦",
     stage: "变量",
     goal: "把文字和数字装进有名字的“盒子”，再把它们取出来。",
-    task: "修改姓名、年龄和爱好，制作一张属于你的信息卡。",
+    taskTitle: "我的魔法信息卡",
+    task: "使用变量保存你的姓名、年龄和爱好，再让电脑完整地介绍你。",
+    taskSteps: ["把 name 改成你的名字", "修改 age 和 hobby 的内容", "运行代码，检查信息卡是否完整"],
     homework: "创建 name、age 和 hobby 三个变量，再用它们输出一张属于你的个人信息卡。",
     hints: ["= 表示把右边的值放进左边的变量", "变量名不能以数字开头", "f-string 可以把变量放进文字里"],
     starterCode: `name = "朵朵"\nage = 9\nhobby = "画画"\n\nprint(f"你好，我叫{name}")\nprint(f"我今年{age}岁，喜欢{hobby}")`,
@@ -120,7 +126,9 @@ const lessons: Lesson[] = [
     emoji: "🎤",
     stage: "用户输入",
     goal: "使用 input() 接收回答，让程序和人互动。",
-    task: "再问一个问题，比如最喜欢的动物，并把答案打印出来。",
+    taskTitle: "电脑小记者",
+    task: "让电脑成为小记者，除了姓名和爱好，再采访一个你感兴趣的问题。",
+    taskSteps: ["增加一个新的 input() 问题", "在程序输入框准备三个回答", "打印新答案并运行采访程序"],
     homework: "设计一个小采访程序：至少提出 3 个问题，并在最后把收到的答案组合成一段欢迎语。",
     hints: ["右侧“程序输入”每行对应一次 input()", "input() 得到的内容默认是文字", "问题文字也要放在英文引号里"],
     starterCode: `name = input("你叫什么名字？")\nhobby = input("你喜欢做什么？")\n\nprint(f"你好，{name}！")\nprint(f"原来你也喜欢{hobby}呀！")`,
@@ -133,7 +141,9 @@ const lessons: Lesson[] = [
     emoji: "🎡",
     stage: "条件判断",
     goal: "用 if / else 让程序根据不同情况做决定。",
-    task: "把身高改成不同数字运行，观察程序会走哪一条路。",
+    taskTitle: "游乐园小小检票员",
+    task: "用不同身高测试检票程序，看看它会放行还是提醒下次再来。",
+    taskSteps: ["先用身高 135 运行一次", "再把身高改成 110", "比较两次运行结果有什么不同"],
     homework: "编写一个年龄判断器：根据输入的年龄，分别输出儿童、少年或成年人的提示。",
     hints: ["if 后面要有英文冒号", "下一行要缩进 4 个空格", ">= 表示大于或等于"],
     starterCode: `height = 135\n\nif height >= 120:\n    print("检票成功，祝你玩得开心！")\nelse:\n    print("还差一点点，下次再来挑战吧！")`,
@@ -145,7 +155,9 @@ const lessons: Lesson[] = [
     emoji: "🔁",
     stage: "循环",
     goal: "用 for 和 range() 把重复任务交给电脑。",
-    task: "让火箭从 5 倒数到 1，然后打印“发射！”",
+    taskTitle: "火箭发射倒计时",
+    task: "改造循环程序，让火箭完成从 5 到 1 的倒计时并成功发射。",
+    taskSteps: ["把 range() 改成从 5 倒数到 1", "每次循环打印当前数字", "倒计时结束后打印“发射！”"],
     homework: "使用循环完成 10 到 1 的倒计时，并在最后输出“挑战成功！”。",
     hints: ["range(1, 6) 会产生 1 到 5", "循环中的代码需要缩进", "倒数可以试试 range(5, 0, -1)"],
     starterCode: `for number in range(1, 6):\n    print("第", number, "次练习")\n\nprint("我完成啦！")`,
@@ -157,7 +169,9 @@ const lessons: Lesson[] = [
     emoji: "🌟",
     stage: "列表",
     goal: "用列表把多个数据整齐地放在一起。",
-    task: "增加两个愿望，再用循环为每个愿望加上序号。",
+    taskTitle: "闪闪发光的愿望清单",
+    task: "扩充你的愿望列表，再用循环把每一个愿望整齐地展示出来。",
+    taskSteps: ["在列表中增加两个新愿望", "使用循环逐个打印所有愿望", "为每个输出的愿望加上 ✨"],
     homework: "创建一个至少包含 5 项内容的愿望清单，用循环逐项输出，并为每项加上星星符号。",
     hints: ["列表使用方括号 []", "每一项之间用英文逗号隔开", "append() 可以添加新内容"],
     starterCode: `wishes = ["学会 Python", "做一个小游戏", "认识新朋友"]\n\nfor wish in wishes:\n    print("✨", wish)`,
@@ -755,7 +769,6 @@ export default function PythonStudio() {
                   <div className="panel-toolbar">
                     <div className="file-tab"><span className="python-icon">Py</span> main.py</div>
                     <div className="toolbar-actions">
-                      <span className="syntax-hint">输入 p / i / f / w 查看语法提示</span>
                       <span className="shortcut-hint">⌘ / Ctrl + Enter 运行</span>
                       <button className="dark-text-button" onClick={activeTab === "practice" ? resetLesson : clearAssignment}>
                         {activeTab === "practice" ? "恢复示例" : "清空代码"}
@@ -800,15 +813,13 @@ export default function PythonStudio() {
               <aside className="mission-panel">
                 <div className={`mission-card ${activeTab === "assignment" ? "is-assignment" : ""}`}>
                   <p className="eyebrow">{activeTab === "practice" ? "本课任务" : "通关作业"}</p>
-                  <h3>{activeTab === "practice" ? "先模仿，再创造" : "从空白开始挑战"}</h3>
+                  <h3>{activeTab === "practice" ? lesson.taskTitle : "从空白开始挑战"}</h3>
                   <p className="mission-text">{activeTab === "practice" ? lesson.task : lesson.homework}</p>
                   <div className="three-steps">
                     {activeTab === "practice" ? (
-                      <>
-                        <span><b>1</b>先猜结果</span>
-                        <span><b>2</b>运行验证</span>
-                        <span><b>3</b>改出新作品</span>
-                      </>
+                      lesson.taskSteps.map((step, index) => (
+                        <span key={step}><b>{index + 1}</b>{step}</span>
+                      ))
                     ) : (
                       <>
                         <span><b>1</b>读懂要求</span>
@@ -817,18 +828,16 @@ export default function PythonStudio() {
                       </>
                     )}
                   </div>
-                </div>
-
-                <div className="hint-card">
-                  <button className="hint-toggle" onClick={() => setShowHints(!showHints)} aria-expanded={showHints}>
-                    <span>💡 遇到困难？</span>
-                    <span>{showHints ? "收起" : "看提示"}</span>
-                  </button>
                   {showHints && (
-                    <ul>
+                    <ul className="mission-hints">
                       {lesson.hints.map((hint) => <li key={hint}>{hint}</li>)}
                     </ul>
                   )}
+                  <div className="mission-card-actions">
+                    <button className="mission-hint-button" onClick={() => setShowHints(!showHints)} aria-expanded={showHints}>
+                      <span aria-hidden="true">💡</span> {showHints ? "收起提示" : "看提示"}
+                    </button>
+                  </div>
                 </div>
 
                 <div className="input-card">
@@ -848,8 +857,8 @@ export default function PythonStudio() {
 
                 <button className={`complete-button ${completed.includes(lesson.id) ? "is-done" : ""}`} onClick={toggleCompleted}>
                   {completed.includes(lesson.id)
-                    ? "✓ 已完成这一课"
-                    : activeTab === "assignment" ? "提交作业并通关" : "我完成这一课了"}
+                    ? "✓ 任务已完成"
+                    : activeTab === "assignment" ? "提交作业并通关" : "完成任务"}
                 </button>
                 <p className="privacy-note">🔒 代码在你的浏览器里运行，不会上传。</p>
               </aside>
