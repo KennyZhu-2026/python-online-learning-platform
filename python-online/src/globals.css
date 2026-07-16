@@ -267,7 +267,7 @@ button { color: inherit; }
   *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
 }
 
-/* One-lesson learning loop: 学 → 练 → 测 → 评 */
+/* One-lesson learning loop: 学 → 练 → 测 */
 .topbar {
   height: 76px;
   min-height: 76px;
@@ -286,7 +286,7 @@ button { color: inherit; }
   min-width: 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   align-self: center;
   gap: 8px;
   border-top: 0;
@@ -540,7 +540,7 @@ button { color: inherit; }
 @media (max-width: 820px) {
   .topbar { min-height: 108px; height: 108px; padding: 5px 10px 0; grid-template-rows: 50px 48px; }
   .brand-block > div { display: none; }
-  .learning-tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); overflow: visible; }
+  .learning-tabs { grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: visible; }
   .learning-tabs button { min-height: 52px; padding: 7px 5px; gap: 5px; font-size: 10px; }
   .learning-tabs button:not(:last-child)::after { display: none; }
   .learning-tabs button > span { width: 22px; height: 22px; font-size: 9px; }

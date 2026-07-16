@@ -174,9 +174,8 @@ const lessons: Lesson[] = [
 
 const learningTabs: Array<{ id: LearningTab; label: string; icon: string }> = [
   { id: "knowledge", label: "知识讲解", icon: "▶" },
-  { id: "practice", label: "实操练习", icon: "</>" },
-  { id: "quiz", label: "语法测评", icon: "✓" },
-  { id: "assignment", label: "作业通关", icon: "★" },
+  { id: "practice", label: "代码练习", icon: "</>" },
+  { id: "quiz", label: "语法小测", icon: "✓" },
 ];
 
 const quizQuestions: QuizQuestion[] = [
@@ -785,10 +784,10 @@ export default function PythonStudio() {
           )}
 
           {activeTab === "quiz" && (
-            <section className="quiz-stage" role="tabpanel" aria-label="语法测评">
+            <section className="quiz-stage" role="tabpanel" aria-label="语法小测">
               <div className="stage-heading">
                 <div>
-                  <p className="eyebrow">语法测评</p>
+                  <p className="eyebrow">语法小测</p>
                   <h2>小小知识挑战</h2>
                   <p>选择你认为正确的答案，答完马上看到讲解。</p>
                 </div>
@@ -832,7 +831,7 @@ export default function PythonStudio() {
           )}
 
           {(activeTab === "practice" || activeTab === "assignment") && (
-            <section className="coding-stage" role="tabpanel" aria-label={activeTab === "practice" ? "实操练习" : "作业通关"}>
+            <section className="coding-stage" role="tabpanel" aria-label={activeTab === "practice" ? "代码练习" : "作业通关"}>
               <div className="coding-primary">
                 <div className="editor-card">
                   <div className="panel-toolbar">
