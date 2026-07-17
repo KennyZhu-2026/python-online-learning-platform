@@ -416,6 +416,14 @@ button { color: inherit; }
   gap: 7px;
   color: #fff;
   background: linear-gradient(transparent, rgba(7, 14, 11, .88));
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity .28s ease, transform .28s ease;
+}
+.video-card.is-playing:not(:hover) .video-controls {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(10px);
 }
 .video-progress,
 .video-volume {
@@ -448,6 +456,7 @@ button { color: inherit; }
 
 @media (hover: none) {
   .video-controls { padding-inline: 11px; padding-bottom: 8px; }
+  .video-card.is-playing .video-controls { opacity: 1; pointer-events: auto; transform: none; }
   .video-volume { display: none; }
 }
 

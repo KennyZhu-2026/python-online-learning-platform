@@ -31,6 +31,7 @@ test("ships the Python worker and learning content", async () => {
   assert.doesNotMatch(studio, /<figcaption>/);
   assert.match(studio, /视频播放进度/);
   assert.match(studio, /全屏播放/);
+  assert.match(studio, /isPlaying \? "is-playing"/);
   assert.doesNotMatch(studio, /<video\s+controls/);
   assert.match(studio, /从空白开始挑战/);
   assert.match(studio, /registerCompletionItemProvider\("python"/);

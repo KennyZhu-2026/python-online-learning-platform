@@ -381,7 +381,7 @@ function LessonVideo({ src, label }: { src: string; label: string }) {
   };
 
   return (
-    <div className="video-card" ref={playerRef}>
+    <div className={`video-card ${isPlaying ? "is-playing" : ""}`} ref={playerRef}>
       <video
         ref={videoRef}
         preload="metadata"
