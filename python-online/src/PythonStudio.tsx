@@ -747,14 +747,6 @@ export default function PythonStudio() {
         <section className="main-stage">
           {activeTab === "knowledge" && (
             <section className="knowledge-stage" role="tabpanel" aria-label="知识讲解">
-              <div className="stage-heading">
-                <div>
-                  <p className="eyebrow">知识讲解</p>
-                  <h2>先看懂，再动手</h2>
-                  <p>{lesson.goal}</p>
-                </div>
-                <span className="stage-badge">约 3 分钟</span>
-              </div>
               <figure className="video-card">
                 <video
                   controls
@@ -764,10 +756,6 @@ export default function PythonStudio() {
                 >
                   你的浏览器暂不支持视频播放。
                 </video>
-                <figcaption>
-                  <span>第一课教学样片</span>
-                  {lesson.number === 1 ? "跟着视频认识第一行 Python 代码。" : "本课视频正在制作，当前暂用第一课样片展示播放效果。"}
-                </figcaption>
               </figure>
             </section>
           )}

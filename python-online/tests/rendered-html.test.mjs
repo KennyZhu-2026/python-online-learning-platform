@@ -26,6 +26,9 @@ test("ships the Python worker and learning content", async () => {
   assert.match(studio, /知识讲解/);
   assert.match(studio, /代码练习/);
   assert.match(studio, /lesson1-review-1fps\.mp4/);
+  assert.doesNotMatch(studio, /先看懂，再动手/);
+  assert.doesNotMatch(studio, /第一课教学样片/);
+  assert.doesNotMatch(studio, /<figcaption>/);
   assert.match(studio, /从空白开始挑战/);
   assert.match(studio, /registerCompletionItemProvider\("python"/);
   assert.match(studio, /CompletionItemInsertTextRule\.InsertAsSnippet/);
