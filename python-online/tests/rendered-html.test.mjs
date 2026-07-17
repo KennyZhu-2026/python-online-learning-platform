@@ -20,7 +20,7 @@ test("ships the Python worker and learning content", async () => {
   assert.doesNotMatch(worker, /importScripts/);
 
   const studio = await readFile(new URL("../src/PythonStudio.tsx", import.meta.url), "utf8");
-  assert.match(studio, /启动 Python 魔法盒/);
+  assert.match(studio, /让电脑开口说话/);
   assert.match(studio, /Python 之旅/);
   assert.match(studio, /学习编程 · 开始创造/);
   assert.match(studio, /知识讲解/);
@@ -31,7 +31,7 @@ test("ships the Python worker and learning content", async () => {
   assert.match(studio, /CompletionItemInsertTextRule\.InsertAsSnippet/);
   assert.match(studio, /for \$\{1:i\} in range/);
   assert.doesNotMatch(studio, /输入 p \/ i \/ f \/ w 查看语法提示/);
-  assert.match(studio, /会说话的欢迎卡/);
+  assert.match(studio, /会说话的自我介绍卡/);
   assert.match(studio, /火箭发射倒计时/);
   assert.match(studio, /mission-hint-button/);
   assert.match(studio, /完成任务/);
