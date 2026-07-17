@@ -330,6 +330,111 @@ function loadScript(src: string) {
   });
 }
 
+function formatVideoTime(value: number) {
+  const totalSeconds = Number.isFinite(value) ? Math.max(0, Math.floor(value)) : 0;
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+}
+
+function LessonVideo({ src, label }: { src: string; label: string }) {
+  const playerRef = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(1);
+  const [isMuted, setIsMuted] = useState(false);
+
+  const togglePlayback = async () => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.paused) await video.play();
+    else video.pause();
+  };
+
+  const seekTo = (value: number) => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.currentTime = value;
+    setCurrentTime(value);
+  };
+
+  const changeVolume = (value: number) => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.volume = value;
+    video.muted = false;
+    setVolume(value);
+    setIsMuted(false);
+  };
+
+  const toggleMute = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = !video.muted;
+    setIsMuted(video.muted);
+  };
+
+  const enterFullscreen = async () => {
+    await playerRef.current?.requestFullscreen?.();
+  };
+
+  return (
+    <div className="video-card" ref={playerRef}>
+      <video
+        ref={videoRef}
+        preload="metadata"
+        playsInline
+        src={src}
+        aria-label={label}
+        onLoadedMetadata={(event) => setDuration(event.currentTarget.duration)}
+        onDurationChange={(event) => setDuration(event.currentTarget.duration)}
+        onTimeUpdate={(event) => setCurrentTime(event.currentTarget.currentTime)}
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
+        onEnded={() => setIsPlaying(false)}
+      >
+        你的浏览器暂不支持视频播放。
+      </video>
+      <div className="video-controls" aria-label="视频播放控制">
+        <input
+          className="video-progress"
+          type="range"
+          min="0"
+          max={Math.max(duration, 0.1)}
+          step="0.1"
+          value={Math.min(currentTime, Math.max(duration, 0.1))}
+          onChange={(event) => seekTo(Number(event.target.value))}
+          aria-label="视频播放进度"
+          aria-valuetext={`${formatVideoTime(currentTime)} / ${formatVideoTime(duration)}`}
+        />
+        <div className="video-control-row">
+          <button type="button" onClick={togglePlayback} aria-label={isPlaying ? "暂停视频" : "播放视频"}>
+            {isPlaying ? "❚❚" : "▶"}
+          </button>
+          <span className="video-time">{formatVideoTime(currentTime)} / {formatVideoTime(duration)}</span>
+          <span className="video-control-spacer" />
+          <button type="button" onClick={toggleMute} aria-label={isMuted ? "打开声音" : "静音"}>
+            {isMuted || volume === 0 ? "🔇" : "🔊"}
+          </button>
+          <input
+            className="video-volume"
+            type="range"
+            min="0"
+            max="1"
+            step="0.05"
+            value={isMuted ? 0 : volume}
+            onChange={(event) => changeVolume(Number(event.target.value))}
+            aria-label="视频音量"
+          />
+          <button type="button" onClick={enterFullscreen} aria-label="全屏播放">⛶</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function explainError(raw: string) {
   const rules: Array<[string, string]> = [
     ["SyntaxError", "语法有一点小问题，请检查英文括号、引号和冒号。"],
@@ -747,16 +852,10 @@ export default function PythonStudio() {
         <section className="main-stage">
           {activeTab === "knowledge" && (
             <section className="knowledge-stage" role="tabpanel" aria-label="知识讲解">
-              <figure className="video-card">
-                <video
-                  controls
-                  preload="metadata"
-                  src={`${import.meta.env.BASE_URL}videos/lesson1-review-1fps.mp4`}
-                  aria-label={`${lesson.title} 教学视频`}
-                >
-                  你的浏览器暂不支持视频播放。
-                </video>
-              </figure>
+              <LessonVideo
+                src={`${import.meta.env.BASE_URL}videos/lesson1-review-1fps.mp4`}
+                label={`${lesson.title} 教学视频`}
+              />
             </section>
           )}
 

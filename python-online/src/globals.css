@@ -350,16 +350,17 @@ button { color: inherit; }
 }
 .main-stage { min-width: 0; min-height: 0; }
 .knowledge-stage {
+  container-type: size;
   height: 100%;
   min-height: 0;
   padding: 0;
   display: grid;
   place-items: center;
   overflow: hidden;
-  border: 1px solid rgba(23, 49, 39, .12);
-  border-radius: 22px;
-  background: #050806;
-  box-shadow: 0 16px 36px rgba(15, 32, 25, .18);
+  border: 0;
+  border-radius: 20px;
+  background: transparent;
+  box-shadow: none;
 }
 .quiz-stage {
   height: 100%;
@@ -381,14 +382,20 @@ button { color: inherit; }
   font-weight: 800;
 }
 .video-card {
+  position: relative;
   width: 100%;
-  height: 100%;
+  height: auto;
+  max-height: 100%;
+  aspect-ratio: 16 / 9;
   margin: 0;
-  display: grid;
-  place-items: center;
   overflow: hidden;
-  border-radius: inherit;
-  background: #050806;
+  border: 0;
+  border-radius: 20px;
+  background: transparent;
+  box-shadow: 0 16px 36px rgba(15, 32, 25, .15);
+}
+@container (min-aspect-ratio: 16 / 9) {
+  .video-card { width: auto; height: 100%; }
 }
 .video-card video {
   width: 100%;
@@ -396,7 +403,52 @@ button { color: inherit; }
   max-height: none;
   display: block;
   object-fit: contain;
-  background: #050806;
+  background: transparent;
+}
+.video-controls {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2;
+  padding: 34px 16px 12px;
+  display: grid;
+  gap: 7px;
+  color: #fff;
+  background: linear-gradient(transparent, rgba(7, 14, 11, .88));
+}
+.video-progress,
+.video-volume {
+  min-width: 0;
+  margin: 0;
+  accent-color: var(--yellow);
+  cursor: pointer;
+}
+.video-progress { width: 100%; height: 16px; }
+.video-control-row { min-height: 30px; display: flex; align-items: center; gap: 9px; }
+.video-control-row button {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .12);
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+}
+.video-control-row button:hover { background: rgba(255, 255, 255, .24); }
+.video-time { font: 11px var(--font-geist-mono), monospace; font-variant-numeric: tabular-nums; }
+.video-control-spacer { flex: 1; }
+.video-volume { width: 76px; }
+.video-card:fullscreen { width: 100vw; height: 100vh; max-height: none; border-radius: 0; background: #000; }
+.video-card:fullscreen video { object-fit: contain; background: #000; }
+
+@media (hover: none) {
+  .video-controls { padding-inline: 11px; padding-bottom: 8px; }
+  .video-volume { display: none; }
 }
 
 .quiz-list { display: grid; gap: 14px; }
