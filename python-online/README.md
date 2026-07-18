@@ -31,6 +31,8 @@ python-online/
 │   ├── og.png                      # 页面分享预览图
 │   └── python-worker.js            # 在独立线程中运行 Pyodide/Python
 ├── src/                            # 前端应用源码
+│   ├── content/
+│   │   └── lessons/                # 每节课一份独立课程配置及统一索引
 │   ├── PythonStudio.tsx            # 学习平台主界面、课程和交互逻辑
 │   ├── globals.css                 # 全局样式与响应式布局
 │   └── main.tsx                    # React 应用入口
@@ -43,6 +45,8 @@ python-online/
 ├── vite.config.ts                  # Vite 构建配置及部署基础路径
 └── README.md                       # 项目说明文档
 ```
+
+新增或修改课程时，在 `src/content/lessons/` 中维护对应的 `lesson-XX.ts`，并在该目录的 `index.ts` 中按课程顺序注册。代码编辑器、运行结果和任务卡继续复用 `PythonStudio.tsx` 中的通用页面，不需要为每节课复制页面。
 
 运行 `npm install` 后会生成 `node_modules/`；运行 `npm run build` 后会生成用于 ECS 部署的 `dist-ecs/`。这两个目录都是本地生成目录，不属于源码结构。
 

@@ -1,20 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-
-type Lesson = {
-  id: string;
-  number: number;
-  title: string;
-  emoji: string;
-  stage: string;
-  goal: string;
-  taskTitle: string;
-  task: string;
-  taskSteps: string[];
-  homework: string;
-  hints: string[];
-  starterCode: string;
-  inputs?: string;
-};
+import { lessons, type Lesson } from "./content/lessons";
 
 type LearningTab = "knowledge" | "practice" | "assignment";
 
@@ -89,104 +74,6 @@ declare global {
     };
   }
 }
-
-const lessons: Lesson[] = [
-  {
-    id: "hello",
-    number: 1,
-    title: "让电脑开口说话",
-    emoji: "👋",
-    stage: "认识程序",
-    goal: "认识代码从上到下运行，并用 print() 让电脑说话。",
-    taskTitle: "会说话的自我介绍卡",
-    task: "请把示例代码改造成一张属于你的自我介绍卡，让 Python 按顺序说出你的名字、年龄和爱好。完成后运行代码，检查三句话是否都正确显示。",
-    taskSteps: [
-      "把第二行的“朵朵”改成你的名字或昵称",
-      "增加一行 print()，让电脑说出你的年龄",
-      "再增加一行 print()，让电脑说出你的爱好",
-      "运行代码，检查三句话的顺序和内容",
-    ],
-    homework: "从空白文件开始，写一个不少于 3 行的自我介绍程序。请至少使用 2 次 print()，让电脑说出你的名字、爱好和一个学习愿望。",
-    hints: [
-      "每说一句话，就写一行 print()",
-      "想原样显示的文字，需要放在英文双引号里",
-      "检查英文括号和英文引号是否左右成对",
-      "代码会按照从上到下的顺序运行，可以调整代码顺序改变介绍顺序",
-    ],
-    starterCode: `print("你好，Python！")\nprint("我是朵朵！")`,
-  },
-  {
-    id: "variables",
-    number: 2,
-    title: "会变化的魔法盒",
-    emoji: "📦",
-    stage: "变量",
-    goal: "把文字和数字装进有名字的“盒子”，再把它们取出来。",
-    taskTitle: "我的魔法信息卡",
-    task: "使用变量保存你的姓名、年龄和爱好，再让电脑完整地介绍你。",
-    taskSteps: ["把 name 改成你的名字", "修改 age 和 hobby 的内容", "运行代码，检查信息卡是否完整"],
-    homework: "创建 name、age 和 hobby 三个变量，再用它们输出一张属于你的个人信息卡。",
-    hints: ["= 表示把右边的值放进左边的变量", "变量名不能以数字开头", "f-string 可以把变量放进文字里"],
-    starterCode: `name = "朵朵"\nage = 9\nhobby = "画画"\n\nprint(f"你好，我叫{name}")\nprint(f"我今年{age}岁，喜欢{hobby}")`,
-  },
-  {
-    id: "input",
-    number: 3,
-    title: "电脑采访员",
-    emoji: "🎤",
-    stage: "用户输入",
-    goal: "使用 input() 接收回答，让程序和人互动。",
-    taskTitle: "电脑小记者",
-    task: "让电脑成为小记者，除了姓名和爱好，再采访一个你感兴趣的问题。",
-    taskSteps: ["增加一个新的 input() 问题", "在程序输入框准备三个回答", "打印新答案并运行采访程序"],
-    homework: "设计一个小采访程序：至少提出 3 个问题，并在最后把收到的答案组合成一段欢迎语。",
-    hints: ["右侧“程序输入”每行对应一次 input()", "input() 得到的内容默认是文字", "问题文字也要放在英文引号里"],
-    starterCode: `name = input("你叫什么名字？")\nhobby = input("你喜欢做什么？")\n\nprint(f"你好，{name}！")\nprint(f"原来你也喜欢{hobby}呀！")`,
-    inputs: "朵朵\n画画",
-  },
-  {
-    id: "condition",
-    number: 4,
-    title: "智能游乐园检票器",
-    emoji: "🎡",
-    stage: "条件判断",
-    goal: "用 if / else 让程序根据不同情况做决定。",
-    taskTitle: "游乐园小小检票员",
-    task: "用不同身高测试检票程序，看看它会放行还是提醒下次再来。",
-    taskSteps: ["先用身高 135 运行一次", "再把身高改成 110", "比较两次运行结果有什么不同"],
-    homework: "编写一个年龄判断器：根据输入的年龄，分别输出儿童、少年或成年人的提示。",
-    hints: ["if 后面要有英文冒号", "下一行要缩进 4 个空格", ">= 表示大于或等于"],
-    starterCode: `height = 135\n\nif height >= 120:\n    print("检票成功，祝你玩得开心！")\nelse:\n    print("还差一点点，下次再来挑战吧！")`,
-  },
-  {
-    id: "loop",
-    number: 5,
-    title: "重复魔法",
-    emoji: "🔁",
-    stage: "循环",
-    goal: "用 for 和 range() 把重复任务交给电脑。",
-    taskTitle: "火箭发射倒计时",
-    task: "改造循环程序，让火箭完成从 5 到 1 的倒计时并成功发射。",
-    taskSteps: ["把 range() 改成从 5 倒数到 1", "每次循环打印当前数字", "倒计时结束后打印“发射！”"],
-    homework: "使用循环完成 10 到 1 的倒计时，并在最后输出“挑战成功！”。",
-    hints: ["range(1, 6) 会产生 1 到 5", "循环中的代码需要缩进", "倒数可以试试 range(5, 0, -1)"],
-    starterCode: `for number in range(1, 6):\n    print("第", number, "次练习")\n\nprint("我完成啦！")`,
-  },
-  {
-    id: "list",
-    number: 6,
-    title: "愿望清单",
-    emoji: "🌟",
-    stage: "列表",
-    goal: "用列表把多个数据整齐地放在一起。",
-    taskTitle: "闪闪发光的愿望清单",
-    task: "扩充你的愿望列表，再用循环把每一个愿望整齐地展示出来。",
-    taskSteps: ["在列表中增加两个新愿望", "使用循环逐个打印所有愿望", "为每个输出的愿望加上 ✨"],
-    homework: "创建一个至少包含 5 项内容的愿望清单，用循环逐项输出，并为每项加上星星符号。",
-    hints: ["列表使用方括号 []", "每一项之间用英文逗号隔开", "append() 可以添加新内容"],
-    starterCode: `wishes = ["学会 Python", "做一个小游戏", "认识新朋友"]\n\nfor wish in wishes:\n    print("✨", wish)`,
-  },
-];
 
 const learningTabs: Array<{ id: LearningTab; label: string; icon: string }> = [
   { id: "knowledge", label: "知识讲解", icon: "▶" },

@@ -20,7 +20,23 @@ test("ships the Python worker and learning content", async () => {
   assert.doesNotMatch(worker, /importScripts/);
 
   const studio = await readFile(new URL("../src/PythonStudio.tsx", import.meta.url), "utf8");
-  assert.match(studio, /让电脑开口说话/);
+  const lessonFiles = await Promise.all(
+    Array.from({ length: 6 }, (_, index) =>
+      readFile(
+        new URL(`../src/content/lessons/lesson-${String(index + 1).padStart(2, "0")}.ts`, import.meta.url),
+        "utf8",
+      ),
+    ),
+  );
+  const lessonContent = lessonFiles.join("\n");
+  const lessonIndex = await readFile(new URL("../src/content/lessons/index.ts", import.meta.url), "utf8");
+
+  assert.match(studio, /from "\.\/content\/lessons"/);
+  assert.doesNotMatch(studio, /const lessons:/);
+  for (let lessonNumber = 1; lessonNumber <= 6; lessonNumber += 1) {
+    const paddedNumber = String(lessonNumber).padStart(2, "0");
+    assert.match(lessonIndex, new RegExp(`import \\{ lesson${paddedNumber} \\} from "\\./lesson-${paddedNumber}"`));
+  }
   assert.match(studio, /Python 之旅/);
   assert.match(studio, /学习编程 · 开始创造/);
   assert.match(studio, /知识讲解/);
@@ -38,8 +54,12 @@ test("ships the Python worker and learning content", async () => {
   assert.match(studio, /CompletionItemInsertTextRule\.InsertAsSnippet/);
   assert.match(studio, /for \$\{1:i\} in range/);
   assert.doesNotMatch(studio, /输入 p \/ i \/ f \/ w 查看语法提示/);
-  assert.match(studio, /会说话的自我介绍卡/);
-  assert.match(studio, /火箭发射倒计时/);
+  assert.match(lessonContent, /让电脑开口说话/);
+  assert.match(lessonContent, /会说话的自我介绍卡/);
+  assert.match(lessonContent, /谁该穿引号？/);
+  assert.match(lessonContent, /我的数字身份卡/);
+  assert.match(lessonContent, /print\("我今年", 9, "岁啦"\)/);
+  assert.match(lessonContent, /火箭发射倒计时/);
   assert.match(studio, /mission-hint-button/);
   assert.match(studio, /完成任务/);
   assert.match(studio, /print\(\)  输出一个数字/);
