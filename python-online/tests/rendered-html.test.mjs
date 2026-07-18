@@ -6,7 +6,8 @@ test("builds the ECS static application shell", async () => {
   const html = await readFile(new URL("../dist-ecs/index.html", import.meta.url), "utf8");
 
   assert.match(html, /<html lang="zh-CN">/i);
-  assert.match(html, /<title>Python之旅 \| 零基础入门<\/title>/);
+  assert.match(html, /<title>哆啦编程 \| 零基础入门<\/title>/);
+  assert.match(html, /content="哆啦编程为孩子设计的在线 Python 学习空间/);
   assert.match(html, /<div id="root"><\/div>/);
   assert.match(html, /\/python-online\/assets\//);
 });
@@ -37,7 +38,7 @@ test("ships the Python worker and learning content", async () => {
     const paddedNumber = String(lessonNumber).padStart(2, "0");
     assert.match(lessonIndex, new RegExp(`import \\{ lesson${paddedNumber} \\} from "\\./lesson-${paddedNumber}"`));
   }
-  assert.match(studio, /Python 之旅/);
+  assert.match(studio, /哆啦编程/);
   assert.match(studio, /学习编程 · 开始创造/);
   assert.match(studio, /知识讲解/);
   assert.match(studio, /代码练习/);

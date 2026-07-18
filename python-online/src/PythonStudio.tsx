@@ -672,7 +672,7 @@ export default function PythonStudio() {
             <span className="brand-mark" aria-hidden="true">Py</span>
             <div>
               <p className="eyebrow">学习编程 · 开始创造</p>
-              <h1>Python 之旅</h1>
+              <h1>哆啦编程</h1>
             </div>
           </div>
           <div className="topbar-actions">
