@@ -3,6 +3,11 @@ import { lessons, type Lesson } from "./content/lessons";
 
 type LearningTab = "knowledge" | "practice" | "assignment";
 
+type RunRequest = {
+  code: string;
+  inputs: string[];
+};
+
 type MonacoEditor = {
   getValue: () => string;
   setValue: (value: string) => void;
@@ -341,6 +346,8 @@ export default function PythonStudio() {
   const editorHostRef = useRef<HTMLDivElement>(null);
   const editorRef = useRef<MonacoEditor | null>(null);
   const workerRef = useRef<Worker | null>(null);
+  const pendingRunRef = useRef<RunRequest | null>(null);
+  const showInitOverlayRef = useRef(false);
   const runRef = useRef<() => void>(() => undefined);
   const initialCodeRef = useRef(lessons[0].starterCode);
   const selectedIdRef = useRef(lessons[0].id);
@@ -355,7 +362,7 @@ export default function PythonStudio() {
   const [output, setOutput] = useState("点击“运行代码”，看看会发生什么吧！");
   const [runtimeState, setRuntimeState] = useState<"loading" | "ready" | "running" | "error">("loading");
   const [loadProgress, setLoadProgress] = useState(0);
-  const [showInitOverlay, setShowInitOverlay] = useState(true);
+  const [showInitOverlay, setShowInitOverlay] = useState(false);
   const [showSuccessToast, setShowSuccessToast] = useState(false);
   const [editorState, setEditorState] = useState<"loading" | "ready" | "fallback">("loading");
   const [completed, setCompleted] = useState<string[]>([]);
@@ -387,7 +394,8 @@ export default function PythonStudio() {
     if (toastTimerRef.current !== null) window.clearTimeout(toastTimerRef.current);
     setRuntimeState("loading");
     setLoadProgress(0);
-    setShowInitOverlay(true);
+    showInitOverlayRef.current = pendingRunRef.current !== null;
+    setShowInitOverlay(showInitOverlayRef.current);
     setShowSuccessToast(false);
     const worker = new Worker("./python-worker.js", { type: "module" });
     workerRef.current = worker;
@@ -395,10 +403,22 @@ export default function PythonStudio() {
       const message = event.data;
       if (message.type === "ready") {
         setLoadProgress(100);
-        setRuntimeState("ready");
-        setShowSuccessToast(true);
-        overlayTimerRef.current = window.setTimeout(() => setShowInitOverlay(false), 700);
-        toastTimerRef.current = window.setTimeout(() => setShowSuccessToast(false), 3200);
+        if (showInitOverlayRef.current) {
+          setShowSuccessToast(true);
+          overlayTimerRef.current = window.setTimeout(() => {
+            showInitOverlayRef.current = false;
+            setShowInitOverlay(false);
+          }, 700);
+          toastTimerRef.current = window.setTimeout(() => setShowSuccessToast(false), 3200);
+        }
+        const pendingRun = pendingRunRef.current;
+        pendingRunRef.current = null;
+        if (pendingRun) {
+          setRuntimeState("running");
+          worker.postMessage({ type: "run", ...pendingRun });
+        } else {
+          setRuntimeState("ready");
+        }
       } else if (message.type === "progress") {
         setLoadProgress((previous) => Math.max(previous, message.value ?? previous));
       } else if (message.type === "stdout" || message.type === "stderr") {
@@ -411,6 +431,8 @@ export default function PythonStudio() {
         setRuntimeState("ready");
         setOutput((previous) => `${previous}\n\n🕵️ 程序侦探提示\n${explainError(raw)}\n\n${raw}`.trim());
       } else if (message.type === "load-error") {
+        pendingRunRef.current = null;
+        showInitOverlayRef.current = false;
         setRuntimeState("error");
         setShowInitOverlay(false);
         console.error("Python environment failed to load:", message.text);
@@ -419,6 +441,8 @@ export default function PythonStudio() {
     };
     worker.onerror = (event) => {
       console.error("Python worker error:", event.message);
+      pendingRunRef.current = null;
+      showInitOverlayRef.current = false;
       setRuntimeState("error");
       setShowInitOverlay(false);
       setOutput("Python 魔法盒暂时没有加载成功，请点击“重新加载 Python 环境”再试。 ");
@@ -426,16 +450,22 @@ export default function PythonStudio() {
   }, []);
 
   const runCode = useCallback(() => {
-    if (runtimeState !== "ready" || !workerRef.current) return;
     const currentCode = editorRef.current?.getValue() ?? (activeTab === "assignment" ? assignmentCode : code);
     saveEditorValue(currentCode, activeTab);
     setOutput("");
-    setRuntimeState("running");
-    workerRef.current.postMessage({
-      type: "run",
+    const runRequest = {
       code: currentCode,
       inputs: inputText.split(/\r?\n/),
-    });
+    };
+    if (runtimeState === "loading") {
+      pendingRunRef.current = runRequest;
+      showInitOverlayRef.current = true;
+      setShowInitOverlay(true);
+      return;
+    }
+    if (runtimeState !== "ready" || !workerRef.current) return;
+    setRuntimeState("running");
+    workerRef.current.postMessage({ type: "run", ...runRequest });
   }, [activeTab, assignmentCode, code, inputText, runtimeState, saveEditorValue]);
 
   useEffect(() => {
@@ -670,7 +700,7 @@ export default function PythonStudio() {
         <div className="topbar-main">
           <div className="brand-block">
             <span className="brand-mark" aria-hidden="true">Py</span>
-            <div>
+            <div className="brand-copy">
               <p className="eyebrow">学习编程 · 开始创造</p>
               <h1>哆啦编程</h1>
             </div>
@@ -682,8 +712,12 @@ export default function PythonStudio() {
                 {runtimeState === "loading" ? "环境准备中" : "环境初始化失败"}
               </div>
             )}
-            <div className="progress-copy">
-              <strong>{completed.length}</strong> / {lessons.length} 课
+            <div className="current-lesson" aria-label={`当前课程：第 ${lesson.number} 课 ${lesson.title}`}>
+              <span>当前课程</span>
+              <div className="current-lesson-copy">
+                <strong>第 {lesson.number} 课 · {lesson.title}</strong>
+                <small>{lesson.goal}</small>
+              </div>
             </div>
           </div>
         </div>
@@ -778,7 +812,7 @@ export default function PythonStudio() {
                     ) : runtimeState === "error" ? (
                       <button className="run-button" onClick={createWorker}>↻ 重新加载 Python 环境</button>
                     ) : (
-                      <button className="run-button" onClick={runCode} disabled={runtimeState !== "ready"}>
+                      <button className="run-button" onClick={runCode}>
                         <span aria-hidden="true">▶</span> 运行代码
                       </button>
                     )}

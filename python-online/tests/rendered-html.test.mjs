@@ -21,6 +21,7 @@ test("ships the Python worker and learning content", async () => {
   assert.doesNotMatch(worker, /importScripts/);
 
   const studio = await readFile(new URL("../src/PythonStudio.tsx", import.meta.url), "utf8");
+  const styles = await readFile(new URL("../src/globals.css", import.meta.url), "utf8");
   const lessonFiles = await Promise.all(
     Array.from({ length: 6 }, (_, index) =>
       readFile(
@@ -40,8 +41,12 @@ test("ships the Python worker and learning content", async () => {
   }
   assert.match(studio, /哆啦编程/);
   assert.match(studio, /学习编程 · 开始创造/);
+  assert.match(studio, /className="brand-copy"/);
+  assert.match(styles, /\.brand-block h1 \{[\s\S]*?text-align-last: justify;/);
   assert.match(studio, /知识讲解/);
   assert.match(studio, /代码练习/);
+  assert.match(studio, /当前课程/);
+  assert.doesNotMatch(studio, /completed\.length\}<\/strong> \/ \{lessons\.length\} 课/);
   assert.match(studio, /lesson1-review-1fps\.mp4/);
   assert.doesNotMatch(studio, /先看懂，再动手/);
   assert.doesNotMatch(studio, /第一课教学样片/);
@@ -74,6 +79,10 @@ test("ships the Python worker and learning content", async () => {
   assert.doesNotMatch(studio, /keyword: "list"/);
   assert.match(studio, /环境初始化成功/);
   assert.match(studio, /environment-overlay/);
+  assert.match(studio, /const \[showInitOverlay, setShowInitOverlay\] = useState\(false\)/);
+  assert.match(studio, /runtimeState === "loading"/);
+  assert.match(studio, /setShowInitOverlay\(true\)/);
+  assert.doesNotMatch(studio, /disabled=\{runtimeState !== "ready"\}/);
   assert.doesNotMatch(studio, /Python 已就绪/);
   assert.match(studio, /运行代码/);
   assert.match(studio, /new Worker\("\.\/python-worker\.js", \{ type: "module" \}\)/);
