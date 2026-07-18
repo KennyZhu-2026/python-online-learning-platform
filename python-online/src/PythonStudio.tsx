@@ -90,6 +90,18 @@ const CODE_KEY_PREFIX = "python-sprout-code-";
 const INPUT_KEY_PREFIX = "python-sprout-input-";
 const ASSIGNMENT_KEY_PREFIX = "python-sprout-assignment-";
 const COMPLETED_KEY = "python-sprout-completed";
+const LEGACY_HELLO_STARTER_CODE = `print("你好，Python！")
+print("我是朵朵！")`;
+
+function getStoredLessonCode(lesson: Lesson) {
+  const storageKey = `${CODE_KEY_PREFIX}${lesson.id}`;
+  const savedCode = localStorage.getItem(storageKey);
+  if (lesson.id === "hello" && savedCode === LEGACY_HELLO_STARTER_CODE) {
+    localStorage.setItem(storageKey, lesson.starterCode);
+    return lesson.starterCode;
+  }
+  return savedCode ?? lesson.starterCode;
+}
 
 const childFriendlySnippets = [
   {
@@ -499,14 +511,12 @@ export default function PythonStudio() {
           localStorage.removeItem(COMPLETED_KEY);
         }
       }
-      const savedCode = localStorage.getItem(`${CODE_KEY_PREFIX}${lessons[0].id}`);
+      const savedCode = getStoredLessonCode(lessons[0]);
       const savedAssignment = localStorage.getItem(`${ASSIGNMENT_KEY_PREFIX}${lessons[0].id}`);
       const savedInput = localStorage.getItem(`${INPUT_KEY_PREFIX}${lessons[0].id}`);
-      if (savedCode) {
-        initialCodeRef.current = savedCode;
-        setCode(savedCode);
-        editorRef.current?.setValue(savedCode);
-      }
+      initialCodeRef.current = savedCode;
+      setCode(savedCode);
+      editorRef.current?.setValue(savedCode);
       if (savedAssignment !== null) setAssignmentCode(savedAssignment);
       if (savedInput !== null) setInputText(savedInput);
       createWorker();
@@ -630,7 +640,7 @@ export default function PythonStudio() {
     selectedIdRef.current = nextLesson.id;
     setSelectedId(nextLesson.id);
     setShowHints(false);
-    const nextCode = localStorage.getItem(`${CODE_KEY_PREFIX}${nextLesson.id}`) ?? nextLesson.starterCode;
+    const nextCode = getStoredLessonCode(nextLesson);
     const nextAssignment = localStorage.getItem(`${ASSIGNMENT_KEY_PREFIX}${nextLesson.id}`) ?? "";
     const nextInput = localStorage.getItem(`${INPUT_KEY_PREFIX}${nextLesson.id}`) ?? nextLesson.inputs ?? "";
     setCode(nextCode);
@@ -656,7 +666,7 @@ export default function PythonStudio() {
     if (nextTab === "practice" || nextTab === "assignment") {
       const nextValue = nextTab === "assignment"
         ? localStorage.getItem(`${ASSIGNMENT_KEY_PREFIX}${lesson.id}`) ?? assignmentCode
-        : localStorage.getItem(`${CODE_KEY_PREFIX}${lesson.id}`) ?? code;
+        : getStoredLessonCode(lesson);
       initialCodeRef.current = nextValue;
       setEditorState(isCompact ? "fallback" : "loading");
       window.requestAnimationFrame(() => editorRef.current?.setValue(nextValue));
@@ -712,13 +722,6 @@ export default function PythonStudio() {
                 {runtimeState === "loading" ? "环境准备中" : "环境初始化失败"}
               </div>
             )}
-            <div className="current-lesson" aria-label={`当前课程：第 ${lesson.number} 课 ${lesson.title}`}>
-              <span>当前课程</span>
-              <div className="current-lesson-copy">
-                <strong>第 {lesson.number} 课 · {lesson.title}</strong>
-                <small>{lesson.goal}</small>
-              </div>
-            </div>
           </div>
         </div>
         <nav className="learning-tabs" aria-label="本课学习阶段" role="tablist">

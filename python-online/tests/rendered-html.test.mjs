@@ -45,7 +45,7 @@ test("ships the Python worker and learning content", async () => {
   assert.match(styles, /\.brand-block h1 \{[\s\S]*?text-align-last: justify;/);
   assert.match(studio, /知识讲解/);
   assert.match(studio, /代码练习/);
-  assert.match(studio, /当前课程/);
+  assert.doesNotMatch(studio, /当前课程/);
   assert.doesNotMatch(studio, /completed\.length\}<\/strong> \/ \{lessons\.length\} 课/);
   assert.match(studio, /lesson1-review-1fps\.mp4/);
   assert.doesNotMatch(studio, /先看懂，再动手/);
@@ -61,7 +61,15 @@ test("ships the Python worker and learning content", async () => {
   assert.match(studio, /for \$\{1:i\} in range/);
   assert.doesNotMatch(studio, /输入 p \/ i \/ f \/ w 查看语法提示/);
   assert.match(lessonContent, /让电脑开口说话/);
-  assert.match(lessonContent, /会说话的自我介绍卡/);
+  assert.doesNotMatch(lessonContent, /会说话的自我介绍卡/);
+  assert.match(lessonContent, /taskTitle: "自我介绍卡"/);
+  assert.match(lessonContent, /在电脑上按顺序输出你的名字、年龄和爱好/);
+  assert.match(lessonContent, /把第2行的“哆啦”改成你的名字或昵称/);
+  assert.match(lessonContent, /把第3行的年龄改成你的年龄或年级/);
+  assert.match(lessonContent, /# 我的第一段代码/);
+  assert.match(lessonContent, /print\("我是哆啦"\)/);
+  assert.match(lessonContent, /print\("我今年9岁啦"\)/);
+  assert.doesNotMatch(lessonContent, /把第二行的“朵朵”改成你的名字或昵称/);
   assert.match(lessonContent, /谁该穿引号？/);
   assert.match(lessonContent, /我的数字身份卡/);
   assert.match(lessonContent, /print\("我今年", 9, "岁啦"\)/);

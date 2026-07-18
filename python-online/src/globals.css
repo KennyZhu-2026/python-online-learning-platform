@@ -72,27 +72,6 @@ button { color: inherit; }
 .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #50a374; box-shadow: 0 0 0 4px rgba(80,163,116,.14); }
 .runtime-badge.is-loading .status-dot { background: var(--yellow); animation: pulse 1s infinite alternate; }
 .runtime-badge.is-error .status-dot { background: var(--coral); }
-.current-lesson {
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 11px;
-}
-.current-lesson > span {
-  flex: none;
-  padding: 5px 8px;
-  border-radius: 8px;
-  background: var(--green-pale);
-  color: var(--green-dark);
-  font-size: 10px;
-  font-weight: 850;
-}
-.current-lesson-copy { min-width: 0; display: grid; gap: 2px; }
-.current-lesson-copy strong,
-.current-lesson-copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.current-lesson-copy strong { font-size: 13px; }
-.current-lesson-copy small { color: var(--muted); font-size: 10px; }
-
 .workspace {
   max-width: 1760px; height: calc(100vh - 126px); min-height: 690px; margin: 0 auto;
   display: grid; grid-template-columns: 255px minmax(520px, 1fr) 286px; gap: 14px;
@@ -597,8 +576,6 @@ button { color: inherit; }
   .brand-block { grid-column: 1; grid-row: 1; }
   .topbar-actions { grid-column: 2; grid-row: 1; }
   .learning-tabs { grid-column: 1 / -1; grid-row: 2; }
-  .current-lesson-copy { max-width: 260px; }
-  .current-lesson-copy small { display: none; }
 }
 
 @media (max-width: 920px) {
@@ -622,8 +599,6 @@ button { color: inherit; }
 @media (max-width: 820px) {
   .topbar { min-height: 108px; height: 108px; padding: 5px 10px 0; grid-template-rows: 50px 48px; }
   .brand-block > div { display: none; }
-  .current-lesson > span { display: none; }
-  .current-lesson-copy { max-width: min(58vw, 220px); }
   .learning-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); overflow: visible; }
   .learning-tabs button { min-height: 52px; padding: 7px 5px; gap: 5px; font-size: 10px; }
   .learning-tabs button:not(:last-child)::after { display: none; }
