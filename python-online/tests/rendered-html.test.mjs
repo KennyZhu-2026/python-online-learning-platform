@@ -60,7 +60,7 @@ test("ships the Python worker and learning content", async () => {
   assert.match(studio, /CompletionItemInsertTextRule\.InsertAsSnippet/);
   assert.match(studio, /for \$\{1:i\} in range/);
   assert.doesNotMatch(studio, /输入 p \/ i \/ f \/ w 查看语法提示/);
-  assert.match(lessonContent, /让电脑开口说话/);
+  assert.match(lessonContent, /让电脑说话的魔法/);
   assert.doesNotMatch(lessonContent, /会说话的自我介绍卡/);
   assert.match(lessonContent, /taskTitle: "自我介绍卡"/);
   assert.match(lessonContent, /在电脑上按顺序输出你的名字、年龄和爱好/);

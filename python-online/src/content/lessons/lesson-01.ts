@@ -3,7 +3,7 @@ import type { Lesson } from "./types";
 export const lesson01 = {
   id: "hello",
   number: 1,
-  title: "让电脑开口说话",
+  title: "让电脑说话的魔法",
   emoji: "👋",
   stage: "认识程序",
   goal: "认识代码从上到下运行，并用 print() 让电脑说话。",
