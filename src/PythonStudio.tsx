@@ -92,11 +92,17 @@ const ASSIGNMENT_KEY_PREFIX = "python-sprout-assignment-";
 const COMPLETED_KEY = "python-sprout-completed";
 const LEGACY_HELLO_STARTER_CODE = `print("你好，Python！")
 print("我是朵朵！")`;
+const PREVIOUS_HELLO_STARTER_CODE = `# 我的第一段代码
+print("我是哆啦")
+print("我今年9岁啦")`;
 
 function getStoredLessonCode(lesson: Lesson) {
   const storageKey = `${CODE_KEY_PREFIX}${lesson.id}`;
   const savedCode = localStorage.getItem(storageKey);
-  if (lesson.id === "hello" && savedCode === LEGACY_HELLO_STARTER_CODE) {
+  if (
+    lesson.id === "hello"
+    && (savedCode === LEGACY_HELLO_STARTER_CODE || savedCode === PREVIOUS_HELLO_STARTER_CODE)
+  ) {
     localStorage.setItem(storageKey, lesson.starterCode);
     return lesson.starterCode;
   }
@@ -336,6 +342,21 @@ function LessonVideo({ src, label }: { src: string; label: string }) {
         </div>
       </div>
     </div>
+  );
+}
+
+function PlannedLessonPanel({ lesson, mode }: { lesson: Lesson; mode: "knowledge" | "practice" }) {
+  return (
+    <section className="planned-lesson-card" aria-label={`${lesson.title}课程预告`}>
+      <span className="planned-lesson-emoji" aria-hidden="true">{lesson.emoji}</span>
+      <p className="eyebrow">第 {lesson.number} 课 · {lesson.stage}</p>
+      <h2>{lesson.title}</h2>
+      <div className="planned-knowledge">
+        <span>本课知识点</span>
+        <strong>{lesson.knowledgePoints}</strong>
+      </div>
+      <p>{mode === "knowledge" ? "教学视频正在准备中。" : "教案确认后将开放本课代码练习。"}</p>
+    </section>
   );
 }
 
@@ -756,10 +777,11 @@ export default function PythonStudio() {
                   key={item.id}
                   onClick={() => chooseLesson(item)}
                   aria-current={active ? "step" : undefined}
+                  title={`${item.stage}｜${item.knowledgePoints}`}
                 >
                   <span className="lesson-number">{done ? "✓" : item.number}</span>
                   <span className="lesson-copy">
-                    <small>{item.stage}</small>
+                    <small>{item.knowledgePoints}</small>
                     <strong>{item.title}</strong>
                   </span>
                   <span className="lesson-emoji" aria-hidden="true">{item.emoji}</span>
@@ -776,14 +798,19 @@ export default function PythonStudio() {
         <section className="main-stage">
           {activeTab === "knowledge" && (
             <section className="knowledge-stage" role="tabpanel" aria-label="知识讲解">
-              <LessonVideo
-                src={`${import.meta.env.BASE_URL}videos/lesson1-review-1fps.mp4`}
-                label={`${lesson.title} 教学视频`}
-              />
+              {lesson.videoSrc ? (
+                <LessonVideo
+                  key={lesson.videoSrc}
+                  src={`${import.meta.env.BASE_URL}${lesson.videoSrc}`}
+                  label={`${lesson.title} 教学视频`}
+                />
+              ) : (
+                <PlannedLessonPanel lesson={lesson} mode="knowledge" />
+              )}
             </section>
           )}
 
-          {(activeTab === "practice" || activeTab === "assignment") && (
+          {(activeTab === "practice" || activeTab === "assignment") && lesson.contentReady && (
             <section className="coding-stage" role="tabpanel" aria-label={activeTab === "practice" ? "代码练习" : "作业通关"}>
               <div className="coding-primary">
                 <div className="editor-card">
@@ -883,6 +910,11 @@ export default function PythonStudio() {
                 </button>
                 <p className="privacy-note">🔒 代码在你的浏览器里运行，不会上传。</p>
               </aside>
+            </section>
+          )}
+          {(activeTab === "practice" || activeTab === "assignment") && !lesson.contentReady && (
+            <section className="knowledge-stage" role="tabpanel" aria-label="代码练习">
+              <PlannedLessonPanel lesson={lesson} mode="practice" />
             </section>
           )}
         </section>

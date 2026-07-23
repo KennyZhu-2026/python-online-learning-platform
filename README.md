@@ -14,7 +14,8 @@ http://8.148.201.87/python-online/
 - Pyodide + Web Worker 浏览器内运行，不把代码上传到服务器
 - 可停止运行，避免错误循环卡住整个页面
 - `input()` 多行输入支持
-- 6 个由浅入深的儿童 Python 闯关课程
+- 21 节由浅入深的儿童 Python 课程目录
+- 第 1、2 课教学视频与配套代码练习
 - 中文“程序侦探”报错提示
 - 课程代码、输入和完成进度自动保存在浏览器
 - 窄屏设备自动切换到轻量编辑器
@@ -32,7 +33,7 @@ python-online/
 │   └── python-worker.js            # 在独立线程中运行 Pyodide/Python
 ├── src/                            # 前端应用源码
 │   ├── content/
-│   │   └── lessons/                # 每节课一份独立课程配置及统一索引
+│   │   └── lessons/                # 课程大纲、已发布课程配置及统一索引
 │   ├── PythonStudio.tsx            # 学习平台主界面、课程和交互逻辑
 │   ├── globals.css                 # 全局样式与响应式布局
 │   └── main.tsx                    # React 应用入口
@@ -46,7 +47,7 @@ python-online/
 └── README.md                       # 项目说明文档
 ```
 
-新增或修改课程时，在 `src/content/lessons/` 中维护对应的 `lesson-XX.ts`，并在该目录的 `index.ts` 中按课程顺序注册。代码编辑器、运行结果和任务卡继续复用 `PythonStudio.tsx` 中的通用页面，不需要为每节课复制页面。
+21 节课的标题和知识点维护在 `src/content/lessons/course-outline.ts`。教案确认并准备发布时，在 `src/content/lessons/` 中新增对应的 `lesson-XX.ts`，再从大纲占位数据切换为正式课程配置。代码编辑器、运行结果和任务卡继续复用 `PythonStudio.tsx` 中的通用页面，不需要为每节课复制页面。
 
 运行 `npm install` 后会生成 `node_modules/`；运行 `npm run build` 后会生成用于 ECS 部署的 `dist-ecs/`。这两个目录都是本地生成目录，不属于源码结构。
 

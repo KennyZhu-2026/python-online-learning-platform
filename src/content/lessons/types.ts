@@ -4,6 +4,9 @@ export type Lesson = {
   readonly title: string;
   readonly emoji: string;
   readonly stage: string;
+  readonly knowledgePoints: string;
+  readonly contentReady: boolean;
+  readonly videoSrc?: string;
   readonly goal: string;
   readonly taskTitle: string;
   readonly task: string;
